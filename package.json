@@ -1,0 +1,12 @@
+{
+  "name": "ordforrad",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i src/popup/input.css -o src/popup/popup.css --minify",
+    "watch": "tailwindcss -i src/popup/input.css -o src/popup/popup.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.0.0"
+  }
+}

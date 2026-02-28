@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ordforråd</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body class="w-[440px] max-h-[600px] flex flex-col bg-slate-50 dark:bg-[#202124] overflow-hidden">
+
+  <!-- Header -->
+  <header class="bg-slate-900 dark:bg-[#292a2d] text-white px-4 py-2.5 flex items-center gap-2.5 shrink-0">
+    <span class="text-lg leading-none">📖</span>
+    <h1 class="font-bold text-sm tracking-wide grow">Ordforråd</h1>
+    <span id="card-count" class="text-[11px] bg-white/15 rounded-full px-2.5 py-0.5 tabular-nums">
+      0
+    </span>
+    <button id="btn-export"
+      class="text-[11px] font-semibold bg-rose-500 hover:bg-rose-400 disabled:opacity-40 disabled:cursor-not-allowed px-2.5 py-1.5 rounded-md transition-colors cursor-pointer"
+      data-i18n="export" disabled>
+      Anki-Export
+    </button>
+    <button id="btn-settings"
+      class="text-white/50 hover:text-white hover:bg-white/10 rounded p-1.5 transition-colors cursor-pointer"
+      data-i18n-title="settings" title="Einstellungen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+        <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+        <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Settings Panel -->
+  <section id="settings-panel" class="bg-white dark:bg-[#292a2d] border-b border-slate-200 dark:border-[#3c4043] px-4 py-3 space-y-2.5 shrink-0" hidden>
+
+    <div class="flex items-center gap-3">
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="model" for="sel-model">Modell</label>
+      <div class="flex gap-1.5 grow min-w-0">
+        <select id="sel-model"
+          class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] min-w-0 focus:outline-none focus:ring-1 focus:ring-rose-400">
+        </select>
+        <button id="btn-fetch-models"
+          class="text-slate-400 dark:text-[#9aa0a6] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-slate-50 dark:hover:bg-[#3c4043] px-2 rounded-md border border-slate-200 dark:border-[#5f6368] text-base leading-none transition-colors cursor-pointer"
+          data-i18n-title="fetchTip" title="Modelle neu laden">↻</button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="apiUrl" for="inp-url">API-URL</label>
+      <input id="inp-url" type="text"
+        class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400"
+        placeholder="http://localhost:1234" />
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="targetLang" for="sel-target">Lernsprache</label>
+      <select id="sel-target"
+        class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400">
+      </select>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="nativeLang" for="sel-native">Muttersprache</label>
+      <select id="sel-native"
+        class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400">
+      </select>
+    </div>
+
+    <button id="btn-save-config"
+      class="w-full bg-rose-500 hover:bg-rose-400 text-white text-xs font-semibold py-2 rounded-md transition-colors cursor-pointer"
+      data-i18n="save">
+      Speichern
+    </button>
+  </section>
+
+  <!-- Main -->
+  <main id="main" class="grow overflow-y-auto p-3">
+
+    <div id="state-loading" class="flex items-center justify-center h-32 text-slate-400 dark:text-[#9aa0a6] text-sm"
+      data-i18n="loading">
+      Lade …
+    </div>
+
+    <div id="state-empty" class="flex flex-col items-center justify-center h-48 text-center gap-2" hidden>
+      <span class="text-4xl">📚</span>
+      <p class="text-slate-600 dark:text-[#bdc1c6] font-medium text-sm" data-i18n="noCards">Noch keine Karten</p>
+      <p class="text-slate-400 dark:text-[#9aa0a6] text-xs leading-relaxed">
+        <span data-i18n="rightClick">Rechtsklick auf ein Wort →</span><br>
+        <em data-i18n="addTo">Zu Ordforråd hinzufügen</em>
+      </p>
+    </div>
+
+    <ul id="card-list" class="space-y-2" hidden></ul>
+
+  </main>
+
+  <!-- Toast -->
+  <div id="toast"
+    class="fixed bottom-3 left-1/2 -translate-x-1/2 text-white text-xs px-4 py-2 rounded-full shadow-lg whitespace-nowrap z-50"
+    hidden>
+  </div>
+
+  <script src="../../libs/sql-wasm.js"></script>
+  <script src="../../libs/jszip.min.js"></script>
+  <script type="module" src="popup.js"></script>
+
+</body>
+</html>

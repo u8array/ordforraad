@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Tailwind v4 – Content-Quellen explizit angeben */
+@source "./popup.html";
+@source "./popup.js";
+@source "../i18n/strings.js";
+
+/* Dark-Modus über System-Theme */
+@custom-variant dark (@media (prefers-color-scheme: dark));
