@@ -95,12 +95,16 @@ function applyConfig(config) {
 
 // ── Model dropdown ────────────────────────────────────────────────────────────
 
+let _modelListToken = 0;
+
 async function loadModelList() {
+  const token = ++_modelListToken;
   elBtnFetch.textContent = '…';
   elBtnFetch.disabled    = true;
+  elSelModel.innerHTML   = '';
   try {
     const stored = await getConfig();
-    // Merge current UI values so unsaved provider/url/key changes are respected
+    if (token !== _modelListToken) return;
     const config = {
       ...stored,
       provider:    elSelProvider.value,
@@ -108,17 +112,20 @@ async function loadModelList() {
       apiKey:      elInpApiKey.value.trim() || stored.apiKey,
     };
     const models = await fetchModels(config);
-    elSelModel.innerHTML = '';
+    if (token !== _modelListToken) return;
     models.forEach(id => elSelModel.appendChild(new Option(id, id)));
     elSelModel.value = models.includes(stored.model) ? stored.model : (models[0] ?? '');
     if (!models.length) showToast(currentStrings.noModel, true);
   } catch (err) {
+    if (token !== _modelListToken) return;
     showToast(err.message, true);
     const { model } = await getConfig();
     if (model) setModelOption(model, true);
   } finally {
-    elBtnFetch.textContent = '↻';
-    elBtnFetch.disabled    = false;
+    if (token === _modelListToken) {
+      elBtnFetch.textContent = '↻';
+      elBtnFetch.disabled    = false;
+    }
   }
 }
 
