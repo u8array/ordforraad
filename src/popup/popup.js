@@ -119,8 +119,6 @@ async function loadModelList() {
   } catch (err) {
     if (token !== _modelListToken) return;
     showToast(err.message, true);
-    const { model } = await getConfig();
-    if (model) setModelOption(model, true);
   } finally {
     if (token === _modelListToken) {
       elBtnFetch.textContent = '↻';
