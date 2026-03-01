@@ -8,7 +8,7 @@
  *  - Notify user via browser notification
  */
 
-import { fetchCardData }               from '../api/lmStudioClient.js';
+import { fetchCardData }               from '../api/llmClient.js';
 import { saveCard }                    from '../storage/cardStorage.js';
 import { createCard, validateLlmData } from '../shared/cardSchema.js';
 import { getConfig }                   from '../config/configStorage.js';

@@ -37,8 +37,10 @@ export const LANGUAGES = [
  * @typedef {Object} AppConfig
  * @property {string} targetLang   – Language being learned (e.g. "Dänisch")
  * @property {string} nativeLang   – Learner's native language (e.g. "Deutsch")
- * @property {string} model        – LLM model ID from LM Studio (empty = active model)
+ * @property {string} model        – LLM model ID (empty = auto-select first available)
  * @property {string} lmStudioUrl  – Base URL of LM Studio (e.g. "http://localhost:1234")
+ * @property {string} provider     – Active provider: 'lmstudio' | 'openai' | 'anthropic'
+ * @property {string} apiKey       – API key for OpenAI / Anthropic
  */
 
 /** @type {AppConfig} */
@@ -47,6 +49,8 @@ export const DEFAULT_CONFIG = {
   nativeLang:  'Deutsch',
   model:       '',
   lmStudioUrl: 'http://localhost:1234',
+  provider:    'lmstudio',
+  apiKey:      '',
 };
 
 /**

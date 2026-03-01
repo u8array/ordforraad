@@ -34,6 +34,17 @@
 
     <div class="flex items-center gap-3">
       <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="provider" for="sel-provider">Anbieter</label>
+      <select id="sel-provider"
+        class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400">
+        <option value="lmstudio">LM Studio</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Claude</option>
+      </select>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
         data-i18n="model" for="sel-model">Modell</label>
       <div class="flex gap-1.5 grow min-w-0">
         <select id="sel-model"
@@ -45,12 +56,20 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div id="row-url" class="flex items-center gap-3">
       <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
         data-i18n="apiUrl" for="inp-url">API-URL</label>
       <input id="inp-url" type="text"
         class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400"
         placeholder="http://localhost:1234" />
+    </div>
+
+    <div id="row-apikey" class="flex items-center gap-3" hidden>
+      <label class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide w-24 shrink-0"
+        data-i18n="apiKey" for="inp-apikey">API-Key</label>
+      <input id="inp-apikey" type="password"
+        class="grow text-xs border border-slate-200 dark:border-[#5f6368] rounded-md px-2 py-1.5 bg-white dark:bg-[#3c4043] text-slate-700 dark:text-[#e8eaed] focus:outline-none focus:ring-1 focus:ring-rose-400"
+        placeholder="sk-…" />
     </div>
 
     <div class="flex items-center gap-3">

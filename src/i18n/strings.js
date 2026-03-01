@@ -65,6 +65,8 @@ const STRINGS = {
     card1:       'Karte',
     cardN:       'Karten',
     menu:        'Zu Ordforråd hinzufügen',
+    provider:    'Anbieter',
+    apiKey:      'API-Key',
   },
 
   en: {
@@ -95,6 +97,8 @@ const STRINGS = {
     card1:       'card',
     cardN:       'cards',
     menu:        'Add to Ordforråd',
+    provider:    'Provider',
+    apiKey:      'API-Key',
   },
 
   da: {
@@ -125,6 +129,8 @@ const STRINGS = {
     card1:       'kort',
     cardN:       'kort',
     menu:        'Føj til Ordforråd',
+    provider:    'Udbyder',
+    apiKey:      'API-Key',
   },
 
   fr: {
@@ -155,6 +161,8 @@ const STRINGS = {
     card1:       'carte',
     cardN:       'cartes',
     menu:        'Ajouter à Ordforråd',
+    provider:    'Fournisseur',
+    apiKey:      'API-Key',
   },
 
   es: {
@@ -185,6 +193,8 @@ const STRINGS = {
     card1:       'tarjeta',
     cardN:       'tarjetas',
     menu:        'Añadir a Ordforråd',
+    provider:    'Proveedor',
+    apiKey:      'API-Key',
   },
 
   it: {
@@ -215,6 +225,8 @@ const STRINGS = {
     card1:       'scheda',
     cardN:       'schede',
     menu:        'Aggiungi a Ordforråd',
+    provider:    'Provider',
+    apiKey:      'API-Key',
   },
 
   pt: {
@@ -245,6 +257,8 @@ const STRINGS = {
     card1:       'cartão',
     cardN:       'cartões',
     menu:        'Adicionar ao Ordforråd',
+    provider:    'Provedor',
+    apiKey:      'API-Key',
   },
 
   nl: {
@@ -275,6 +289,8 @@ const STRINGS = {
     card1:       'kaart',
     cardN:       'kaarten',
     menu:        'Toevoegen aan Ordforråd',
+    provider:    'Aanbieder',
+    apiKey:      'API-Key',
   },
 
   sv: {
@@ -305,6 +321,8 @@ const STRINGS = {
     card1:       'kort',
     cardN:       'kort',
     menu:        'Lägg till i Ordforråd',
+    provider:    'Leverantör',
+    apiKey:      'API-Key',
   },
 
   nb: {
@@ -335,6 +353,8 @@ const STRINGS = {
     card1:       'kort',
     cardN:       'kort',
     menu:        'Legg til i Ordforråd',
+    provider:    'Leverandør',
+    apiKey:      'API-Key',
   },
 
   fi: {
@@ -365,6 +385,8 @@ const STRINGS = {
     card1:       'kortti',
     cardN:       'korttia',
     menu:        'Lisää Ordforråd-kokoelmaan',
+    provider:    'Palveluntarjoaja',
+    apiKey:      'API-Key',
   },
 
   pl: {
@@ -395,6 +417,8 @@ const STRINGS = {
     card1:       'karta',
     cardN:       'kart',
     menu:        'Dodaj do Ordforråd',
+    provider:    'Dostawca',
+    apiKey:      'API-Key',
   },
 
   cs: {
@@ -425,6 +449,8 @@ const STRINGS = {
     card1:       'karta',
     cardN:       'karet',
     menu:        'Přidat do Ordforråd',
+    provider:    'Poskytovatel',
+    apiKey:      'API-Key',
   },
 
   ru: {
@@ -455,6 +481,8 @@ const STRINGS = {
     card1:       'карточка',
     cardN:       'карточек',
     menu:        'Добавить в Ordforråd',
+    provider:    'Поставщик',
+    apiKey:      'API-Key',
   },
 
   tr: {
@@ -485,6 +513,8 @@ const STRINGS = {
     card1:       'kart',
     cardN:       'kart',
     menu:        'Ordforråd\'a Ekle',
+    provider:    'Sağlayıcı',
+    apiKey:      'API-Key',
   },
 
   hu: {
@@ -515,6 +545,8 @@ const STRINGS = {
     card1:       'kártya',
     cardN:       'kártya',
     menu:        'Hozzáadás az Ordforråd-hoz',
+    provider:    'Szolgáltató',
+    apiKey:      'API-Key',
   },
 
   el: {
@@ -545,6 +577,8 @@ const STRINGS = {
     card1:       'κάρτα',
     cardN:       'κάρτες',
     menu:        'Προσθήκη στο Ordforråd',
+    provider:    'Πάροχος',
+    apiKey:      'API-Key',
   },
 
   is: {
@@ -575,6 +609,8 @@ const STRINGS = {
     card1:       'spjald',
     cardN:       'spjöld',
     menu:        'Bæta við Ordforråd',
+    provider:    'Veitandi',
+    apiKey:      'API-Key',
   },
 
   ja: {
@@ -606,6 +642,8 @@ const STRINGS = {
     cardN:       '枚',
     noSpace:     true,
     menu:        'Ordforråd に追加',
+    provider:    'プロバイダー',
+    apiKey:      'API-Key',
   },
 
   ko: {
@@ -637,6 +675,8 @@ const STRINGS = {
     cardN:       '장',
     noSpace:     true,
     menu:        'Ordforråd에 추가',
+    provider:    '제공자',
+    apiKey:      'API-Key',
   },
 
   zh: {
@@ -668,6 +708,8 @@ const STRINGS = {
     cardN:       '张',
     noSpace:     true,
     menu:        '添加到Ordforråd',
+    provider:    '提供商',
+    apiKey:      'API-Key',
   },
 
   ar: {
@@ -698,6 +740,8 @@ const STRINGS = {
     card1:       'بطاقة',
     cardN:       'بطاقات',
     menu:        'إضافة إلى Ordforråd',
+    provider:    'مزوِّد',
+    apiKey:      'API-Key',
   },
 
 };

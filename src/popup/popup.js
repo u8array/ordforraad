@@ -5,7 +5,7 @@
 import { getAllCards, deleteCard }           from '../storage/cardStorage.js';
 import { exportToApkg }                     from '../export/ankiExporter.js';
 import { getConfig, saveConfig, LANGUAGES } from '../config/configStorage.js';
-import { fetchModels }                      from '../api/lmStudioClient.js';
+import { fetchModels }                      from '../api/llmClient.js';
 import { t, localeName, cardCount }         from '../i18n/strings.js';
 
 // ── DOM references ────────────────────────────────────────────────────────────
@@ -24,6 +24,10 @@ const elInpUrl        = document.getElementById('inp-url');
 const elSelTarget     = document.getElementById('sel-target');
 const elSelNative     = document.getElementById('sel-native');
 const elBtnSave       = document.getElementById('btn-save-config');
+const elSelProvider   = document.getElementById('sel-provider');
+const elRowUrl        = document.getElementById('row-url');
+const elRowApiKey     = document.getElementById('row-apikey');
+const elInpApiKey     = document.getElementById('inp-apikey');
 
 // Currently loaded strings (set after config is loaded)
 let currentStrings = t('Deutsch');
@@ -74,10 +78,18 @@ function populateLanguageSelects(nativeLangKey) {
   });
 }
 
+function applyProviderRows(provider) {
+  elRowUrl.hidden    = provider !== 'lmstudio';
+  elRowApiKey.hidden = provider === 'lmstudio';
+}
+
 function applyConfig(config) {
-  elSelTarget.value = config.targetLang;
-  elSelNative.value = config.nativeLang;
-  elInpUrl.value    = config.lmStudioUrl;
+  elSelTarget.value   = config.targetLang;
+  elSelNative.value   = config.nativeLang;
+  elInpUrl.value      = config.lmStudioUrl;
+  elSelProvider.value = config.provider ?? 'lmstudio';
+  elInpApiKey.value   = config.apiKey ?? '';
+  applyProviderRows(elSelProvider.value);
   if (config.model) setModelOption(config.model, true);
 }
 
@@ -87,11 +99,18 @@ async function loadModelList() {
   elBtnFetch.textContent = '…';
   elBtnFetch.disabled    = true;
   try {
-    const config = await getConfig();
+    const stored = await getConfig();
+    // Merge current UI values so unsaved provider/url/key changes are respected
+    const config = {
+      ...stored,
+      provider:    elSelProvider.value,
+      lmStudioUrl: elInpUrl.value.trim() || stored.lmStudioUrl,
+      apiKey:      elInpApiKey.value.trim() || stored.apiKey,
+    };
     const models = await fetchModels(config);
     elSelModel.innerHTML = '';
     models.forEach(id => elSelModel.appendChild(new Option(id, id)));
-    elSelModel.value = models.includes(config.model) ? config.model : (models[0] ?? '');
+    elSelModel.value = models.includes(stored.model) ? stored.model : (models[0] ?? '');
     if (!models.length) showToast(currentStrings.noModel, true);
   } catch (err) {
     showToast(err.message, true);
@@ -101,6 +120,11 @@ async function loadModelList() {
     elBtnFetch.textContent = '↻';
     elBtnFetch.disabled    = false;
   }
+}
+
+function handleProviderChange() {
+  applyProviderRows(elSelProvider.value);
+  loadModelList();
 }
 
 function setModelOption(id, selected = false) {
@@ -118,6 +142,7 @@ elBtnSettings.addEventListener('click', () => {
 });
 
 elBtnFetch.addEventListener('click', () => loadModelList());
+elSelProvider.addEventListener('change', handleProviderChange);
 
 elBtnSave.addEventListener('click', async () => {
   const newConfig = {
@@ -125,6 +150,8 @@ elBtnSave.addEventListener('click', async () => {
     targetLang:  elSelTarget.value,
     nativeLang:  elSelNative.value,
     lmStudioUrl: elInpUrl.value.trim() || 'http://localhost:1234',
+    provider:    elSelProvider.value,
+    apiKey:      elInpApiKey.value.trim(),
   };
   await saveConfig(newConfig);
 
