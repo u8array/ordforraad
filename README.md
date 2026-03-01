@@ -2,9 +2,9 @@
 
 A Chrome extension for building vocabulary cards with an LLM and exporting them to Anki.
 
-I've been using Anki for years. Back when I was still working through textbooks, making cards by hand was fine. You encounter maybe a dozen new words per session and writing them out takes a few minutes.
+I've been using Anki for years. Back when I was still working through textbooks, making cards by hand was fine. You're already in learning mode, so switching to Anki and back doesn't feel like an interruption.
 
-Reading native content online is different. For each unknown word you look it up, switch to Anki, create the card, and then try to find where you were. The lookup was always fine. The card creation was the part that felt like extra work.
+Reading native content online is different. You want to capture the words, but every time you stop to create a card you lose your place in the text. The overhead per word is just too high.
 
 So I built this. Right-click any word on any page and a complete card comes back: translation, pronunciation, grammar notes, an example sentence in context, a memory tip. When you have enough cards, export to Anki and start reviewing.
 
