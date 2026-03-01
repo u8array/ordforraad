@@ -90,7 +90,11 @@ function applyConfig(config) {
   elSelProvider.value = config.provider ?? 'lmstudio';
   elInpApiKey.value   = config.apiKey ?? '';
   applyProviderRows(elSelProvider.value);
-  if (config.model) setModelOption(config.model, true);
+  if (config.model) {
+    if (![...elSelModel.options].some(o => o.value === config.model))
+      elSelModel.appendChild(new Option(config.model, config.model));
+    elSelModel.value = config.model;
+  }
 }
 
 // ── Model dropdown ────────────────────────────────────────────────────────────
@@ -130,12 +134,6 @@ async function loadModelList() {
 function handleProviderChange() {
   applyProviderRows(elSelProvider.value);
   loadModelList();
-}
-
-function setModelOption(id, selected = false) {
-  if (![...elSelModel.options].some(o => o.value === id))
-    elSelModel.appendChild(new Option(id, id));
-  if (selected) elSelModel.value = id;
 }
 
 // ── Settings events ───────────────────────────────────────────────────────────

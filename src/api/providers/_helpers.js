@@ -4,7 +4,7 @@
 
 import { localeName, t } from '../../i18n/strings.js';
 
-export const FETCH_TIMEOUT_MS = 30_000;
+const FETCH_TIMEOUT_MS = 30_000;
 
 /** Fetch with automatic timeout. */
 export function fetchWithTimeout(url, options = {}) {
@@ -38,7 +38,7 @@ The JSON must contain exactly these fields:
 
 /**
  * Returns the first model from the provider's model list.
- * @param {Function} fetchModelsFn  – the provider's fetchModels(config)
+ * @param {Function} fetchModelsFn  the provider's fetchModels(config)
  * @param {import('../../config/configStorage.js').AppConfig} config
  * @returns {Promise<string>}
  */

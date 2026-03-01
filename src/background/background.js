@@ -48,26 +48,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!word) return;
 
   const context = await extractContext(tab.id, word);
+  const config  = await getConfig().catch(() => null);
+  const s       = t(config?.nativeLang ?? 'Deutsch');
 
   try {
-    const config = await getConfig();
-    const s      = t(config.nativeLang);
-    const raw    = await fetchCardData(word, context, config);
-    const data   = validateLlmData(raw);
-    const card   = createCard(word, context, tab.url ?? '', data);
+    const raw  = await fetchCardData(word, context, config);
+    const data = validateLlmData(raw);
+    const card = createCard(word, context, tab.url ?? '', data);
 
     await saveCard(card);
-
-    chrome.runtime.sendMessage({ type: 'CARD_ADDED', card }).catch(() => {
-      // Popup is not open – not an error
-    });
-
+    chrome.runtime.sendMessage({ type: 'CARD_ADDED', card }).catch(() => {});
     notify(s.notifOk, `„${word}" → ${card.translation}`);
 
   } catch (err) {
     console.error('[Ordforråd]', err);
-    const config = await getConfig().catch(() => null);
-    const s      = t(config?.nativeLang ?? 'Deutsch');
     notify(s.notifErr, err.message ?? 'Unknown error.');
   }
 });

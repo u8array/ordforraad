@@ -3,10 +3,10 @@
  *
  * Creates a .apkg file (ZIP with SQLite database in Anki2 format).
  *
- * Abhängigkeiten (als <script> in popup.html geladen):
- *   - sql.js  → globales `initSqlJs`  (libs/sql-wasm.js)
- *   - JSZip   → globales `JSZip`      (libs/jszip.min.js)
- *   WASM-Datei: libs/sql-wasm.wasm, Pfad via chrome.runtime.getURL
+ * Requires as globals (loaded via <script> in popup.html):
+ *   - sql.js  → `initSqlJs`  (libs/sql-wasm.js)
+ *   - JSZip   → `JSZip`      (libs/jszip.min.js)
+ *   WASM file: libs/sql-wasm.wasm, located via chrome.runtime.getURL
  *
  * Anki2-Format-Referenz:
  *   https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
@@ -248,7 +248,7 @@ export async function exportToApkg(cards, config) {
   const { deckId, modelId } = langPairIds(config.targetLang, config.nativeLang);
 
   // initialise sql.js – WASM is stored locally in libs/
-  const SQL = await initSqlJs({               // eslint-disable-line no-undef
+  const SQL = await initSqlJs({
     locateFile: f => chrome.runtime.getURL(`libs/${f}`),
   });
 
@@ -288,7 +288,6 @@ export async function exportToApkg(cards, config) {
       card.grammar, card.exampleDA, card.exampleDE, card.memoryTip, card.context,
     ].join('\x1f');
 
-    // eslint-disable-next-line no-await-in-loop
     const csum = await fieldChecksum(card.word);
 
     db.run(
@@ -307,7 +306,7 @@ export async function exportToApkg(cards, config) {
   db.close();
 
   // .apkg = ZIP of collection.anki2 + media
-  const zip = new JSZip();             // eslint-disable-line no-undef
+  const zip = new JSZip();
   zip.file('collection.anki2', dbData);
   zip.file('media', '{}');
 
