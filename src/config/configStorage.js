@@ -1,5 +1,5 @@
 /**
- * Configuration – language settings.
+ * Configuration: language settings.
  *
  * Single source of truth for supported languages
  * and default values.

@@ -1,5 +1,5 @@
 /**
- * Internationalisation – UI strings for all 22 supported languages.
+ * Internationalisation: UI strings for all 22 supported languages.
  *
  * Language names in dropdowns are localised via Intl.DisplayNames
  * (no manual 22×22 translation table needed).
@@ -761,7 +761,7 @@ export function t(nativeLangKey) {
 
 /**
  * Returns the localized display name of a language.
- * Uses Intl.DisplayNames – no manual mapping required.
+ * Uses Intl.DisplayNames (no manual mapping required).
  *
  * @param {string} langKey      German key of the language to display ("Dänisch")
  * @param {string} inLangKey    German key of the UI language ("Englisch")

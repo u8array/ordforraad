@@ -16,7 +16,7 @@
 
 /**
  * Derives two stable, distinct integer IDs from the language pair.
- * Uses djb2 hash → range 1_000_000_000–1_999_999_999 (Anki-safe).
+ * Uses djb2 hash, output range 1_000_000_000 to 1_999_999_999 (Anki-safe).
  * @param {string} targetLang
  * @param {string} nativeLang
  * @returns {{ deckId: number, modelId: number }}
@@ -247,7 +247,7 @@ export async function exportToApkg(cards, config) {
 
   const { deckId, modelId } = langPairIds(config.targetLang, config.nativeLang);
 
-  // initialise sql.js – WASM is stored locally in libs/
+  // initialise sql.js (WASM stored locally in libs/)
   const SQL = await initSqlJs({
     locateFile: f => chrome.runtime.getURL(`libs/${f}`),
   });
@@ -282,7 +282,7 @@ export async function exportToApkg(cards, config) {
     const noteId = card.createdAt + i;          // ms timestamp, unique via index offset
     const cardId = card.createdAt + i + 1;      // must differ from noteId
 
-    // \x1f = ASCII Unit Separator – Anki's internal field delimiter
+    // \x1f = ASCII Unit Separator, Anki's internal field delimiter
     const flds = [
       card.word, card.translation, card.pronunciation, card.wordClass,
       card.grammar, card.exampleDA, card.exampleDE, card.memoryTip, card.context,
