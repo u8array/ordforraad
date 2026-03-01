@@ -8,6 +8,8 @@ Reading native content online is different. You want to capture the words, but e
 
 So I built this. Right-click any word on any page and a complete card comes back: translation, pronunciation, grammar notes, an example sentence in context, a memory tip. When you have enough cards, export to Anki and start reviewing.
 
+![Popup showing saved cards](docs/screenshots/popup-cards.png)
+
 ---
 
 ## What you need
