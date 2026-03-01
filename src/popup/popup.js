@@ -202,7 +202,7 @@ function buildCard(card) {
 
       <div class="flex items-baseline gap-2">
         <span class="text-slate-900 dark:text-[#e8eaed] font-bold text-[15px] leading-snug grow">${esc(card.word)}</span>
-        <span class="text-[10px] text-slate-400 dark:text-[#9aa0a6] truncate max-w-[140px] text-right">${esc(card.wordClass)}</span>
+        <span class="text-[10px] text-slate-400 dark:text-[#9aa0a6] truncate max-w-[140px] text-right" title="${esc(card.wordClass)}">${esc(card.wordClass)}</span>
         <button class="btn-delete text-slate-300 dark:text-[#5f6368] hover:text-rose-400 transition-colors text-sm leading-none shrink-0 cursor-pointer"
           data-id="${esc(card.id)}" title="${esc(s.delete)}">✕</button>
       </div>
