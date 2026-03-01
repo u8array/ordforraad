@@ -79,6 +79,10 @@ The LLM prompt adapts automatically, no language-specific templates.
 
 ---
 
+## Contributing
+
+Pull requests are welcome.
+
 ## Libraries
 
 [sql.js](https://github.com/sql-js/sql.js) and [JSZip](https://stuk.github.io/jszip/) are fetched from jsDelivr on first install and cached locally. No requests are made to any CDN after that.
