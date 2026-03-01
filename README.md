@@ -1,5 +1,7 @@
 # Ordforråd
 
+A Chrome extension for building vocabulary cards with an LLM and exporting them to Anki.
+
 I've been using Anki for years. Back when I was still working through textbooks, making cards by hand was fine. You encounter maybe a dozen new words per session and writing them out takes a few minutes.
 
 Reading native content online is different. Words come constantly, and stopping to manually create a card for each one breaks the flow enough that you stop doing it. I kept telling myself I'd write them later, from memory. Across several languages, I never once actually did.
