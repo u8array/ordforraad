@@ -55,24 +55,33 @@ export const DEFAULT_CONFIG = {
 };
 
 /**
- * Reads the stored configuration.
- * Missing fields are filled with DEFAULT_CONFIG.
- * @returns {Promise<AppConfig>}
+ * Reads the raw persisted config (no computed fields).
+ * @returns {Promise<Omit<AppConfig, 'apiKey'>>}
  */
-export async function getConfig() {
+async function getRawConfig() {
   const result = await chrome.storage.local.get(CONFIG_KEY);
   const raw = { ...DEFAULT_CONFIG, ...(result[CONFIG_KEY] ?? {}) };
 
   // Migration: move legacy single apiKey into apiKeys map
-  if (raw.apiKey && !raw.apiKeys?.[raw.provider]) {
+  if (typeof raw.apiKey === 'string' && raw.apiKey) {
     raw.apiKeys = { ...raw.apiKeys, [raw.provider]: raw.apiKey };
     delete raw.apiKey;
     await chrome.storage.local.set({ [CONFIG_KEY]: raw });
   }
 
-  // Computed: resolve active provider's key
-  raw.apiKey = raw.apiKeys?.[raw.provider] ?? '';
+  delete raw.apiKey;
   return raw;
+}
+
+/**
+ * Reads the stored configuration.
+ * Missing fields are filled with DEFAULT_CONFIG.
+ * Adds computed `apiKey` for the active provider.
+ * @returns {Promise<AppConfig>}
+ */
+export async function getConfig() {
+  const raw = await getRawConfig();
+  return { ...raw, apiKey: raw.apiKeys?.[raw.provider] ?? '' };
 }
 
 /**
@@ -80,6 +89,6 @@ export async function getConfig() {
  * @param {Partial<AppConfig>} config
  */
 export async function saveConfig(config) {
-  const current = await getConfig();
+  const current = await getRawConfig();
   await chrome.storage.local.set({ [CONFIG_KEY]: { ...current, ...config } });
 }

@@ -78,9 +78,16 @@ function populateLanguageSelects(nativeLangKey) {
   });
 }
 
+const API_KEY_PLACEHOLDER = {
+  openai:    'sk-…',
+  anthropic: 'sk-ant-…',
+  google:    'AIza…',
+};
+
 function applyProviderRows(provider) {
   elRowUrl.hidden    = provider !== 'lmstudio';
   elRowApiKey.hidden = provider === 'lmstudio';
+  elInpApiKey.placeholder = API_KEY_PLACEHOLDER[provider] ?? 'API-Key';
 }
 
 function applyConfig(config) {
