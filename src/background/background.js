@@ -28,7 +28,7 @@ async function registerContextMenu() {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id:       MENU_ID,
-      title:    `📖 ${s.menu}`,
+      title:    s.menu,
       contexts: ['selection'],
     });
   });
