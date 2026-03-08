@@ -27,7 +27,7 @@ Respond ONLY with a valid JSON object. No markdown, no explanation outside the J
 The JSON must contain exactly these fields:
 {
   "translation":   "Precise ${native} translation (multiple meanings separated by semicolons if applicable)",
-  "pronunciation": "Phonetic transcription in IPA or simplified for ${native} speakers",
+  "pronunciation": "Strict IPA transcription only (e.g. [ˈhʉːnə]). Use IPA brackets. No approximations, no ASCII replacements.",
   "wordClass":     "Word class in ${target} with key inflection info (gender, plural, conjugation, etc.)",
   "grammar":       "Most important grammatical note in ${native} for correct usage – empty string if not applicable",
   "exampleDA":     "Natural example sentence in ${target} showing the word in context",
