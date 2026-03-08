@@ -51,7 +51,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const word = info.selectionText?.trim();
   if (!word) return;
 
-  chrome.storage.session.set({ loadingWord: word });
+  // Track all concurrently loading words
+  const { loadingWords = [] } = await chrome.storage.session.get('loadingWords');
+  await chrome.storage.session.set({ loadingWords: [...loadingWords, word] });
   chrome.runtime.sendMessage({ type: 'CARD_LOADING', word }).catch(() => {});
 
   const context = await extractContext(tab.id, word);
@@ -69,15 +71,18 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const card = createCard(word, context, tab.url ?? '', data);
 
     await saveCard(card);
-    chrome.runtime.sendMessage({ type: 'CARD_ADDED', card }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'CARD_ADDED', card, word }).catch(() => {});
     notify(s.notifOk, `„${word}" → ${card.translation}`);
 
   } catch (err) {
-    chrome.runtime.sendMessage({ type: 'CARD_LOADING_DONE' }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'CARD_LOADING_DONE', word }).catch(() => {});
     console.error('[Ordforråd]', err);
     notify(s.notifErr, err.message ?? 'Unknown error.');
   } finally {
-    chrome.storage.session.remove('loadingWord');
+    const { loadingWords = [] } = await chrome.storage.session.get('loadingWords');
+    const idx = loadingWords.indexOf(word);
+    if (idx !== -1) loadingWords.splice(idx, 1);
+    await chrome.storage.session.set({ loadingWords });
   }
 });
 

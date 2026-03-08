@@ -46,15 +46,15 @@ async function init() {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
   }
 
-  // Check if a card is currently loading (popup opened after CARD_LOADING was sent)
-  const { loadingWord } = await chrome.storage.session.get('loadingWord');
-  if (loadingWord) showSkeleton(loadingWord);
+  // Show skeletons for all currently loading words (popup opened mid-flight)
+  const { loadingWords = [] } = await chrome.storage.session.get('loadingWords');
+  loadingWords.forEach(w => showSkeleton(w));
 
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === 'CARD_LOADING')      showSkeleton(msg.word);
-    if (msg.type === 'CARD_LOADING_DONE') removeSkeleton();
+    if (msg.type === 'CARD_LOADING_DONE') removeSkeleton(msg.word);
     if (msg.type === 'CARD_ADDED') {
-      removeSkeleton();
+      removeSkeleton(msg.word);
       getAllCards().then(render).catch(err => showToast(`${currentStrings.error}: ${err.message}`, true));
     }
   });
@@ -206,7 +206,10 @@ function render(cards) {
   elCount.textContent = cardCount(cards.length, currentStrings);
   elExport.disabled   = cards.length === 0;
 
-  if (!cards.length) {
+  // Preserve skeletons across re-renders
+  const skeletons = [...elList.querySelectorAll('[data-skeleton]')];
+
+  if (!cards.length && !skeletons.length) {
     elEmpty.hidden = false;
     elList.hidden  = true;
     elList.innerHTML = '';
@@ -215,6 +218,7 @@ function render(cards) {
   elEmpty.hidden = true;
   elList.hidden  = false;
   elList.innerHTML = '';
+  skeletons.forEach(s => elList.appendChild(s));
   [...cards].sort((a, b) => b.createdAt - a.createdAt).forEach(c => elList.appendChild(buildCard(c)));
 }
 
@@ -260,9 +264,8 @@ function buildCard(card) {
 // ── Skeleton loading ─────────────────────────────────────────────────────────
 
 function showSkeleton(word) {
-  removeSkeleton();
   const li = document.createElement('li');
-  li.dataset.skeleton = '';
+  li.dataset.skeleton = word;
   li.className = 'bg-white dark:bg-[#292a2d] rounded-xl border border-slate-200 dark:border-[#3c4043] shadow-sm overflow-hidden';
   li.innerHTML = `
     <div class="border-l-4 border-slate-300 dark:border-slate-600 px-3.5 py-3 space-y-2">
@@ -285,8 +288,16 @@ function showSkeleton(word) {
   elList.prepend(li);
 }
 
-function removeSkeleton() {
-  elList.querySelector('[data-skeleton]')?.remove();
+function removeSkeleton(word) {
+  const selector = word
+    ? `[data-skeleton="${CSS.escape(word)}"]`
+    : '[data-skeleton]';
+  elList.querySelector(selector)?.remove();
+  // If no skeletons and no cards remain, show empty state
+  if (!elList.children.length) {
+    elEmpty.hidden = false;
+    elList.hidden  = true;
+  }
 }
 
 // ── Card events ───────────────────────────────────────────────────────────────
