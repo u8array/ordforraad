@@ -236,7 +236,7 @@ function buildCard(card) {
 
       <div>
         <div class="text-slate-800 dark:text-[#bdc1c6] font-semibold text-sm">${esc(card.translation)}</div>
-        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6] italic">[${esc(card.pronunciation)}]</div>
+        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6] italic">${esc(card.pronunciation)}</div>
       </div>
 
       ${card.exampleDA ? `

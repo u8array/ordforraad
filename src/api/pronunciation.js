@@ -46,6 +46,22 @@ export async function fetchPronunciation(word, targetLang) {
   const heading = code && CODE_TO_HEADING[code];
   if (!heading) return null;
 
+  const section = await fetchLangSection(word, heading);
+  if (!section) return null;
+
+  const ipa = extractIpa(section);
+  if (ipa) return ipa;
+
+  // Inflected forms (e.g. "embedsmænd") have no IPA — follow base form link
+  const base = extractBaseForm(section, code);
+  if (!base || base === word) return null;
+
+  const baseSection = await fetchLangSection(base, heading);
+  return baseSection ? extractIpa(baseSection) : null;
+}
+
+/** Fetches the wikitext for a specific language section from Wiktionary. */
+async function fetchLangSection(word, heading) {
   const url  = `${WIKT_API}?action=parse&page=${encodeURIComponent(word)}&prop=wikitext&format=json&origin=*`;
   const resp = await fetch(url);
   if (!resp.ok) return null;
@@ -54,25 +70,32 @@ export async function fetchPronunciation(word, targetLang) {
   const wikitext = json?.parse?.wikitext?.['*'] ?? '';
   if (!wikitext) return null;
 
-  // Extract the language section (==Danish== … next ==Lang== or end)
   const sectionRegex = new RegExp(
     `==${escapeRegex(heading)}==([\\s\\S]*?)(?=\\n==[^=]|$)`
   );
-  const section = wikitext.match(sectionRegex)?.[1] ?? '';
-  if (!section) return null;
+  return wikitext.match(sectionRegex)?.[1] ?? null;
+}
 
-  // Prefer phonetic [… ] over phonemic /…/ (more useful for learners)
+/** Extracts IPA from a language section (phonetic preferred over phonemic). */
+function extractIpa(section) {
   const ipaBracket = section.match(/\{\{IPA\|[^}]*?\[([^\]]+)\]/);
   if (ipaBracket) return `[${ipaBracket[1]}]`;
 
   const ipaSlash = section.match(/\{\{IPA\|[^}]*?\/([^/]+)\//);
   if (ipaSlash) return `/${ipaSlash[1]}/`;
 
-  // Bare IPA in square brackets with typical IPA characters
   const bare = section.match(/\[([^\[\]]*[ˈˌːʰðθʃʒŋ][^\[\]]*)\]/);
   if (bare) return `[${bare[1]}]`;
 
   return null;
+}
+
+/** Extracts base/lemma form from {{infl of}} or {{inflection of}} templates. */
+function extractBaseForm(section, langCode) {
+  const m = section.match(
+    /\{\{(?:infl of|inflection of)\|([^|]+)\|([^|}]+)/
+  );
+  return (m && m[1] === langCode) ? m[2] : null;
 }
 
 function escapeRegex(s) {
