@@ -39,7 +39,7 @@ export const LANGUAGES = [
  * @property {string} nativeLang   Learner's native language (e.g. "Deutsch")
  * @property {string} model        LLM model ID (empty = auto-select first available)
  * @property {string} lmStudioUrl  Base URL of LM Studio (e.g. "http://localhost:1234")
- * @property {string} provider     Active provider: 'lmstudio' | 'openai' | 'anthropic'
+ * @property {string} provider     Active provider: 'lmstudio' | 'openai' | 'anthropic' | 'google'
  * @property {string} apiKey       API key for OpenAI / Anthropic
  */
 
