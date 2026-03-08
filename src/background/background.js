@@ -17,6 +17,9 @@ import { t }                           from '../i18n/strings.js';
 
 const MENU_ID = 'ordforrad_add';
 
+// Allow popup to read session storage (default: service worker only)
+chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+
 // ── Context menu ──────────────────────────────────────────────────────────────
 
 async function registerContextMenu() {
@@ -48,6 +51,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const word = info.selectionText?.trim();
   if (!word) return;
 
+  chrome.storage.session.set({ loadingWord: word });
+  chrome.runtime.sendMessage({ type: 'CARD_LOADING', word }).catch(() => {});
+
   const context = await extractContext(tab.id, word);
   const config  = await getConfig().catch(() => null);
   const s       = t(config?.nativeLang ?? 'Deutsch');
@@ -67,8 +73,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     notify(s.notifOk, `„${word}" → ${card.translation}`);
 
   } catch (err) {
+    chrome.runtime.sendMessage({ type: 'CARD_LOADING_DONE' }).catch(() => {});
     console.error('[Ordforråd]', err);
     notify(s.notifErr, err.message ?? 'Unknown error.');
+  } finally {
+    chrome.storage.session.remove('loadingWord');
   }
 });
 

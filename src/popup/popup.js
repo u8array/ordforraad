@@ -45,8 +45,18 @@ async function init() {
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
   }
+
+  // Check if a card is currently loading (popup opened after CARD_LOADING was sent)
+  const { loadingWord } = await chrome.storage.session.get('loadingWord');
+  if (loadingWord) showSkeleton(loadingWord);
+
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.type === 'CARD_ADDED') getAllCards().then(render).catch(err => showToast(`${currentStrings.error}: ${err.message}`, true));
+    if (msg.type === 'CARD_LOADING')      showSkeleton(msg.word);
+    if (msg.type === 'CARD_LOADING_DONE') removeSkeleton();
+    if (msg.type === 'CARD_ADDED') {
+      removeSkeleton();
+      getAllCards().then(render).catch(err => showToast(`${currentStrings.error}: ${err.message}`, true));
+    }
   });
 }
 
@@ -245,6 +255,38 @@ function buildCard(card) {
 
   li.querySelector('.btn-delete').addEventListener('click', () => handleDelete(card.id));
   return li;
+}
+
+// ── Skeleton loading ─────────────────────────────────────────────────────────
+
+function showSkeleton(word) {
+  removeSkeleton();
+  const li = document.createElement('li');
+  li.dataset.skeleton = '';
+  li.className = 'bg-white dark:bg-[#292a2d] rounded-xl border border-slate-200 dark:border-[#3c4043] shadow-sm overflow-hidden';
+  li.innerHTML = `
+    <div class="border-l-4 border-slate-300 dark:border-slate-600 px-3.5 py-3 space-y-2">
+      <div class="flex items-baseline gap-2">
+        <span class="text-slate-900 dark:text-[#e8eaed] font-bold text-[15px]">${esc(word)}</span>
+        <span class="h-3 w-16 bg-slate-200 dark:bg-[#3c4043] rounded animate-pulse"></span>
+      </div>
+      <div class="space-y-1.5">
+        <div class="h-4 w-32 bg-slate-200 dark:bg-[#3c4043] rounded animate-pulse"></div>
+        <div class="h-3 w-20 bg-slate-100 dark:bg-[#3c4043] rounded animate-pulse"></div>
+      </div>
+      <div class="pl-2.5 border-l-2 border-slate-100 dark:border-[#3c4043] space-y-1">
+        <div class="h-3 w-48 bg-slate-100 dark:bg-[#3c4043] rounded animate-pulse"></div>
+        <div class="h-3 w-40 bg-slate-100 dark:bg-[#3c4043] rounded animate-pulse"></div>
+      </div>
+    </div>
+  `;
+  elEmpty.hidden = true;
+  elList.hidden  = false;
+  elList.prepend(li);
+}
+
+function removeSkeleton() {
+  elList.querySelector('[data-skeleton]')?.remove();
 }
 
 // ── Card events ───────────────────────────────────────────────────────────────
