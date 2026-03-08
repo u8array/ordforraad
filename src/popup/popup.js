@@ -88,7 +88,7 @@ function applyConfig(config) {
   elSelNative.value   = config.nativeLang;
   elInpUrl.value      = config.lmStudioUrl;
   elSelProvider.value = config.provider ?? 'lmstudio';
-  elInpApiKey.value   = config.apiKey ?? '';
+  elInpApiKey.value   = config.apiKeys?.[elSelProvider.value] ?? '';
   applyProviderRows(elSelProvider.value);
   if (config.model) {
     if (![...elSelModel.options].some(o => o.value === config.model))
@@ -109,11 +109,12 @@ async function loadModelList() {
   try {
     const stored = await getConfig();
     if (token !== _modelListToken) return;
+    const provider = elSelProvider.value;
     const config = {
       ...stored,
-      provider:    elSelProvider.value,
+      provider,
       lmStudioUrl: elInpUrl.value.trim() || stored.lmStudioUrl,
-      apiKey:      elInpApiKey.value.trim() || stored.apiKey,
+      apiKey:      elInpApiKey.value.trim() || stored.apiKeys?.[provider] || '',
     };
     const models = await fetchModels(config);
     if (token !== _modelListToken) return;
@@ -131,8 +132,10 @@ async function loadModelList() {
   }
 }
 
-function handleProviderChange() {
+async function handleProviderChange() {
   applyProviderRows(elSelProvider.value);
+  const config = await getConfig();
+  elInpApiKey.value = config.apiKeys?.[elSelProvider.value] ?? '';
   loadModelList();
 }
 
@@ -148,13 +151,22 @@ elBtnFetch.addEventListener('click', () => loadModelList());
 elSelProvider.addEventListener('change', handleProviderChange);
 
 elBtnSave.addEventListener('click', async () => {
+  const stored = await getConfig();
+  const provider = elSelProvider.value;
+  const updatedKeys = { ...stored.apiKeys };
+  const keyValue = elInpApiKey.value.trim();
+  if (keyValue) {
+    updatedKeys[provider] = keyValue;
+  } else {
+    delete updatedKeys[provider];
+  }
   const newConfig = {
     model:       elSelModel.value,
     targetLang:  elSelTarget.value,
     nativeLang:  elSelNative.value,
     lmStudioUrl: elInpUrl.value.trim() || 'http://localhost:1234',
-    provider:    elSelProvider.value,
-    apiKey:      elInpApiKey.value.trim(),
+    provider,
+    apiKeys:     updatedKeys,
   };
   await saveConfig(newConfig);
 

@@ -40,7 +40,8 @@ export const LANGUAGES = [
  * @property {string} model        LLM model ID (empty = auto-select first available)
  * @property {string} lmStudioUrl  Base URL of LM Studio (e.g. "http://localhost:1234")
  * @property {string} provider     Active provider: 'lmstudio' | 'openai' | 'anthropic' | 'google'
- * @property {string} apiKey       API key for OpenAI / Anthropic
+ * @property {Object<string,string>} apiKeys  Per-provider API keys
+ * @property {string} apiKey       (computed) API key for the active provider
  */
 
 /** @type {AppConfig} */
@@ -50,7 +51,7 @@ export const DEFAULT_CONFIG = {
   model:       '',
   lmStudioUrl: 'http://localhost:1234',
   provider:    'lmstudio',
-  apiKey:      '',
+  apiKeys:     {},
 };
 
 /**
@@ -60,7 +61,18 @@ export const DEFAULT_CONFIG = {
  */
 export async function getConfig() {
   const result = await chrome.storage.local.get(CONFIG_KEY);
-  return { ...DEFAULT_CONFIG, ...(result[CONFIG_KEY] ?? {}) };
+  const raw = { ...DEFAULT_CONFIG, ...(result[CONFIG_KEY] ?? {}) };
+
+  // Migration: move legacy single apiKey into apiKeys map
+  if (raw.apiKey && !raw.apiKeys?.[raw.provider]) {
+    raw.apiKeys = { ...raw.apiKeys, [raw.provider]: raw.apiKey };
+    delete raw.apiKey;
+    await chrome.storage.local.set({ [CONFIG_KEY]: raw });
+  }
+
+  // Computed: resolve active provider's key
+  raw.apiKey = raw.apiKeys?.[raw.provider] ?? '';
+  return raw;
 }
 
 /**
