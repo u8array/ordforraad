@@ -9,6 +9,7 @@
  */
 
 import { fetchCardData }               from '../api/llmClient.js';
+import { fetchPronunciation }          from '../api/pronunciation.js';
 import { saveCard }                    from '../storage/cardStorage.js';
 import { createCard, validateLlmData } from '../shared/cardSchema.js';
 import { getConfig }                   from '../config/configStorage.js';
@@ -54,6 +55,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
     const raw  = await fetchCardData(word, context, config);
     const data = validateLlmData(raw);
+
+    // Wiktionary IPA override (falls back to LLM pronunciation)
+    const wiktIpa = await fetchPronunciation(word, config.targetLang).catch(() => null);
+    if (wiktIpa) data.pronunciation = wiktIpa;
+
     const card = createCard(word, context, tab.url ?? '', data);
 
     await saveCard(card);

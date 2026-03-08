@@ -64,5 +64,6 @@ export async function fetchCardData(word, context, config) {
   const payload = await response.json();
   const raw     = payload?.candidates?.[0]?.content?.parts
     ?.map(p => p.text).join('') ?? '';
+  console.debug('[Ordforråd Google] raw response:', raw);
   return parseJsonResponse(raw, config.nativeLang);
 }
