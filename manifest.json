@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ordforråd",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Right-click any word to build vocabulary cards with a local LLM and export to Anki.",
 
   "permissions": [

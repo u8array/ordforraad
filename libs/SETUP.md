@@ -53,4 +53,4 @@ Note: If sql.js changes the WASM filename/path expectations, ensure the popup st
 2. Enable **Developer mode**
 3. Click **Load unpacked** and select the project root (`ordforråd/`)
 4. Start LM Studio, load a model, and ensure the server is running on port 1234
-5. Right‑click a Danish word → **“📖 Add to Ordforråd”**
+5. Right‑click a word → **”Add to Ordforråd”**

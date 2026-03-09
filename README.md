@@ -19,6 +19,7 @@ So I built this. Right-click any word on any page and a complete card comes back
   - **[LM Studio](https://lmstudio.ai)** running locally (free, no API key)
   - An **OpenAI** API key
   - An **Anthropic** API key
+  - A **Google AI** API key
 
 ---
 
@@ -51,6 +52,10 @@ Select **OpenAI**, paste your API key, and click **↻** to fetch the available 
 ### Claude (Anthropic)
 
 Select **Claude**, paste your API key, and click **↻**.
+
+### Google
+
+Select **Google**, paste your API key, and click **↻** to fetch available models.
 
 ---
 
