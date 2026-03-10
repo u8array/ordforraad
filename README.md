@@ -86,6 +86,12 @@ The LLM prompt adapts automatically, no language-specific templates.
 
 ---
 
+## Getting Started
+
+A step-by-step setup guide is available at https://u8array.github.io/ordforraad/guide.html
+
+---
+
 ## Contributing
 
 Pull requests are welcome.
