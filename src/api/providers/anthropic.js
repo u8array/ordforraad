@@ -3,7 +3,7 @@
  */
 
 import { localeName, t } from '../../i18n/strings.js';
-import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse } from './_helpers.js';
+import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse, throwHttpError } from './_helpers.js';
 
 const ANTHROPIC_VERSION = '2023-06-01';
 
@@ -26,7 +26,7 @@ export async function fetchModels(config) {
   } catch (err) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
-  if (!resp.ok) throw new Error(`Anthropic HTTP ${resp.status}: ${resp.statusText}`);
+  if (!resp.ok) throwHttpError('Anthropic', resp.status, config.nativeLang);
   const { data } = await resp.json();
   return (Array.isArray(data) ? data : []).map(m => m.id);
 }
@@ -59,7 +59,7 @@ export async function fetchCardData(word, context, config) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
 
-  if (!response.ok) throw new Error(`Anthropic HTTP ${response.status}: ${response.statusText}`);
+  if (!response.ok) throwHttpError('Anthropic', response.status, config.nativeLang);
 
   const payload = await response.json();
   const raw     = payload?.content?.[0]?.text ?? '';

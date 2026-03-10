@@ -3,7 +3,7 @@
  */
 
 import { localeName, t } from '../../i18n/strings.js';
-import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse } from './_helpers.js';
+import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse, throwHttpError } from './_helpers.js';
 
 /** @param {import('../../config/configStorage.js').AppConfig} config */
 export async function fetchModels(config) {
@@ -16,7 +16,7 @@ export async function fetchModels(config) {
   } catch (err) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
-  if (!resp.ok) throw new Error(`OpenAI HTTP ${resp.status}: ${resp.statusText}`);
+  if (!resp.ok) throwHttpError('OpenAI', resp.status, config.nativeLang);
   const { data } = await resp.json();
   return (Array.isArray(data) ? data : [])
     .map(m => m.id)
@@ -57,7 +57,7 @@ export async function fetchCardData(word, context, config) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
 
-  if (!response.ok) throw new Error(`OpenAI HTTP ${response.status}: ${response.statusText}`);
+  if (!response.ok) throwHttpError('OpenAI', response.status, config.nativeLang);
 
   const payload = await response.json();
   const raw     = payload?.choices?.[0]?.message?.content ?? '';

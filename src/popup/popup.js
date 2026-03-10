@@ -28,6 +28,11 @@ const elSelProvider   = document.getElementById('sel-provider');
 const elRowUrl        = document.getElementById('row-url');
 const elRowApiKey     = document.getElementById('row-apikey');
 const elInpApiKey     = document.getElementById('inp-apikey');
+const elSetupBanner   = document.getElementById('setup-banner');
+const elSettingsError = document.getElementById('settings-error');
+const elErrorBanner   = document.getElementById('error-banner');
+const elErrorMsg      = document.getElementById('error-banner-msg');
+const elDismissError  = document.getElementById('btn-dismiss-error');
 
 // Currently loaded strings (set after config is loaded)
 let currentStrings = t('Deutsch');
@@ -41,10 +46,17 @@ async function init() {
   populateLanguageSelects(config.nativeLang);
   applyConfig(config);
   try {
-    render(await getAllCards());
+    const cards = await getAllCards();
+    render(cards);
+    updateSetupBanner(config, cards.length);
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
+    updateSetupBanner(config, 0);
   }
+
+  // Show last error if any
+  const { lastError } = await chrome.storage.session.get('lastError');
+  if (lastError) showErrorBanner(`${currentStrings.error}: ${lastError.error}`);
 
   // Show skeletons for all currently loading words (popup opened mid-flight)
   const { loadingWords = [] } = await chrome.storage.session.get('loadingWords');
@@ -55,7 +67,14 @@ async function init() {
     if (msg.type === 'CARD_LOADING_DONE') removeSkeleton(msg.word);
     if (msg.type === 'CARD_ADDED') {
       removeSkeleton(msg.word);
-      getAllCards().then(render).catch(err => showToast(`${currentStrings.error}: ${err.message}`, true));
+      dismissErrorBanner();
+      getAllCards().then(cards => {
+        render(cards);
+        getConfig().then(cfg => updateSetupBanner(cfg, cards.length));
+      }).catch(err => showToast(`${currentStrings.error}: ${err.message}`, true));
+    }
+    if (msg.type === 'CARD_ERROR') {
+      showErrorBanner(`${currentStrings.error}: ${msg.error}`);
     }
   });
 }
@@ -114,6 +133,18 @@ function applyConfig(config) {
   }
 }
 
+// ── Setup banner ─────────────────────────────────────────────────────────────
+
+function updateSetupBanner(config, cardCount = 0) {
+  const provider = config.provider ?? 'lmstudio';
+  const hasKey   = !!(config.apiKeys?.[provider] || config.apiKey);
+  // Show banner when no cards exist and either:
+  // - cloud provider without API key, or
+  // - lmstudio (reviewer won't have it running)
+  const needsSetup = provider === 'lmstudio' ? !cardCount : !hasKey;
+  elSetupBanner.hidden = !needsSetup;
+}
+
 // ── Model dropdown ────────────────────────────────────────────────────────────
 
 let _modelListToken = 0;
@@ -150,10 +181,16 @@ async function loadModelList() {
 }
 
 async function handleProviderChange() {
-  applyProviderRows(elSelProvider.value);
+  const provider = elSelProvider.value;
+  applyProviderRows(provider);
   const config = await getConfig();
-  elInpApiKey.value = config.apiKeys?.[elSelProvider.value] ?? '';
-  loadModelList();
+  elInpApiKey.value = config.apiKeys?.[provider] ?? '';
+  // Only fetch models if credentials are available
+  if (provider === 'lmstudio' || config.apiKeys?.[provider]) {
+    loadModelList();
+  } else {
+    elSelModel.innerHTML = '';
+  }
 }
 
 // ── Settings events ───────────────────────────────────────────────────────────
@@ -168,6 +205,7 @@ elBtnFetch.addEventListener('click', () => loadModelList());
 elSelProvider.addEventListener('change', handleProviderChange);
 
 elBtnSave.addEventListener('click', async () => {
+  elSettingsError.hidden = true;
   const stored = await getConfig();
   const provider = elSelProvider.value;
   const updatedKeys = { ...stored.apiKeys };
@@ -185,6 +223,38 @@ elBtnSave.addEventListener('click', async () => {
     provider,
     apiKeys:     updatedKeys,
   };
+
+  // Validate connection before saving
+  const testConfig = { ...newConfig, apiKey: updatedKeys[provider] ?? '' };
+  if (provider !== 'lmstudio' && !testConfig.apiKey) {
+    elSettingsError.textContent = t(newConfig.nativeLang).invalidKey;
+    elSettingsError.hidden = false;
+    return;
+  }
+
+  elBtnSave.disabled = true;
+  elBtnSave.textContent = '…';
+  try {
+    const models = await fetchModels(testConfig);
+    if (!models.length) {
+      elSettingsError.textContent = t(newConfig.nativeLang).noModel;
+      elSettingsError.hidden = false;
+      return;
+    }
+    // Update model dropdown with validated models
+    elSelModel.innerHTML = '';
+    models.forEach(id => elSelModel.appendChild(new Option(id, id)));
+    elSelModel.value = models.includes(newConfig.model) ? newConfig.model : models[0];
+    newConfig.model = elSelModel.value;
+  } catch (err) {
+    elSettingsError.textContent = err.message;
+    elSettingsError.hidden = false;
+    return;
+  } finally {
+    elBtnSave.disabled = false;
+    elBtnSave.textContent = t(newConfig.nativeLang).save;
+  }
+
   await saveConfig(newConfig);
 
   // Update UI language immediately if nativeLang changed
@@ -196,6 +266,8 @@ elBtnSave.addEventListener('click', async () => {
   chrome.runtime.sendMessage({ type: 'SETTINGS_CHANGED' }).catch(() => {});
 
   elSettings.hidden = true;
+  const currentCards = await getAllCards().catch(() => []);
+  updateSetupBanner({ ...newConfig, apiKeys: updatedKeys }, currentCards.length);
   showToast(currentStrings.saved);
 });
 
@@ -332,6 +404,21 @@ async function handleExport() {
     elExport.disabled    = false;
   }
 }
+
+// ── Error banner ──────────────────────────────────────────────────────────────
+
+function showErrorBanner(msg) {
+  elErrorMsg.textContent = msg;
+  elErrorBanner.hidden = false;
+}
+
+async function dismissErrorBanner() {
+  elErrorBanner.hidden = true;
+  await chrome.storage.session.remove('lastError');
+  chrome.action.setBadgeText({ text: '' });
+}
+
+elDismissError.addEventListener('click', dismissErrorBanner);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

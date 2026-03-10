@@ -13,6 +13,14 @@ export function fetchWithTimeout(url, options = {}) {
   return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
 }
 
+/** Throws a localized error for common HTTP status codes. */
+export function throwHttpError(provider, status, nativeLang) {
+  const s = t(nativeLang);
+  if (status === 401 || status === 403) throw new Error(s.invalidKey);
+  if (status === 429)                   throw new Error(s.rateLimited);
+  throw new Error(`${provider} HTTP ${status}`);
+}
+
 /** Builds the system prompt (identical across all providers). */
 export function buildSystemPrompt({ targetLang, nativeLang }) {
   // Use English language names → best LLM reliability

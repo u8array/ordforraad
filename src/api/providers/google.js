@@ -3,7 +3,7 @@
  */
 
 import { localeName, t } from '../../i18n/strings.js';
-import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse } from './_helpers.js';
+import { fetchWithTimeout, buildSystemPrompt, fetchActiveModel, parseJsonResponse, throwHttpError } from './_helpers.js';
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_MODEL = 'gemini-3.1-flash-lite-preview';
@@ -17,7 +17,7 @@ export async function fetchModels(config) {
   } catch (err) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
-  if (!resp.ok) throw new Error(`Gemini HTTP ${resp.status}: ${resp.statusText}`);
+  if (!resp.ok) throwHttpError('Google', resp.status, config.nativeLang);
   const { models } = await resp.json();
   return (Array.isArray(models) ? models : [])
     .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
@@ -59,7 +59,7 @@ export async function fetchCardData(word, context, config) {
     throw new Error(err.name === 'AbortError' ? s.timeout : s.unreachable);
   }
 
-  if (!response.ok) throw new Error(`Gemini HTTP ${response.status}: ${response.statusText}`);
+  if (!response.ok) throwHttpError('Google', response.status, config.nativeLang);
 
   const payload = await response.json();
   const raw     = payload?.candidates?.[0]?.content?.parts

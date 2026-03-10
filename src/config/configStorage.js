@@ -46,8 +46,8 @@ export const LANGUAGES = [
 
 /** @type {AppConfig} */
 export const DEFAULT_CONFIG = {
-  targetLang:  'Dänisch',
-  nativeLang:  'Deutsch',
+  targetLang:  'Spanisch',
+  nativeLang:  'Englisch',
   model:       '',
   lmStudioUrl: 'http://localhost:1234',
   provider:    'lmstudio',

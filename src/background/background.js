@@ -71,13 +71,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const card = createCard(word, context, tab.url ?? '', data);
 
     await saveCard(card);
+    await chrome.storage.session.remove('lastError');
+    chrome.action.setBadgeText({ text: '' });
     chrome.runtime.sendMessage({ type: 'CARD_ADDED', card, word }).catch(() => {});
     notify(s.notifOk, `„${word}" → ${card.translation}`);
 
   } catch (err) {
+    const errorMsg = err.message ?? 'Unknown error.';
     chrome.runtime.sendMessage({ type: 'CARD_LOADING_DONE', word }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'CARD_ERROR', word, error: errorMsg }).catch(() => {});
+    await chrome.storage.session.set({ lastError: { word, error: errorMsg, time: Date.now() } });
+    chrome.action.setBadgeText({ text: '!' });
+    chrome.action.setBadgeBackgroundColor({ color: '#e11d48' });
     console.error('[Ordforråd]', err);
-    notify(s.notifErr, err.message ?? 'Unknown error.');
+    notify(s.notifErr, errorMsg);
   } finally {
     const { loadingWords = [] } = await chrome.storage.session.get('loadingWords');
     const idx = loadingWords.indexOf(word);

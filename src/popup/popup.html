@@ -89,11 +89,34 @@
       </select>
     </div>
 
+    <p id="settings-error" class="text-xs text-rose-600 dark:text-[#f0a0a0] bg-rose-50 dark:bg-[#3c2020] rounded-md px-2.5 py-1.5" hidden></p>
+
     <button id="btn-save-config"
-      class="w-full bg-rose-500 hover:bg-rose-400 text-white text-xs font-semibold py-2 rounded-md transition-colors cursor-pointer"
+      class="w-full bg-rose-500 hover:bg-rose-400 text-white text-xs font-semibold py-2 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       data-i18n="save">
       Speichern
     </button>
+  </section>
+
+  <!-- Setup Banner (shown when no API key is configured) -->
+  <section id="setup-banner" class="bg-amber-50 dark:bg-[#3a3020] border-b border-amber-200 dark:border-[#5a4a2a] px-4 py-3 shrink-0" hidden>
+    <p class="text-sm font-semibold text-amber-900 dark:text-[#f0d090] mb-1.5" data-i18n="setupTitle">Setup required</p>
+    <ol class="text-xs text-amber-800 dark:text-[#d4b878] space-y-1 list-decimal list-inside">
+      <li data-i18n="setupStep1">Click the gear icon above to open Settings</li>
+      <li data-i18n="setupStep2">Choose a provider and enter your API key</li>
+      <li data-i18n="setupStep3">Select a model, then click Save</li>
+    </ol>
+    <p class="text-[11px] text-amber-700 dark:text-[#b89d5c] mt-2" data-i18n="setupHint">Then right-click any word on a webpage to create your first flashcard.</p>
+  </section>
+
+  <!-- Error Banner (shown when last card generation failed) -->
+  <section id="error-banner" class="bg-rose-50 dark:bg-[#3c2020] border-b border-rose-200 dark:border-[#5a3333] px-4 py-2.5 flex items-start gap-2.5 shrink-0" hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-px">
+      <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+    </svg>
+    <p id="error-banner-msg" class="text-xs text-rose-700 dark:text-[#f0a0a0] leading-relaxed grow"></p>
+    <button id="btn-dismiss-error"
+      class="text-rose-300 dark:text-[#7a4444] hover:text-rose-500 dark:hover:text-[#f0a0a0] text-sm leading-none shrink-0 cursor-pointer transition-colors">✕</button>
   </section>
 
   <!-- Main -->
