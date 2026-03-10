@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordforråd – Getting Started</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-3xl mx-auto px-6 py-10">
+      <div class="flex items-center gap-3 mb-3">
+        <img src="../icons/icon48.png" alt="" class="w-8 h-8" />
+        <h1 class="text-2xl font-bold tracking-tight">Ordforråd</h1>
+      </div>
+      <p class="text-slate-300 text-lg">Getting Started Guide</p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-10 space-y-14">
+
+    <!-- Step 1 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">1</span>
+        <h2 class="text-xl font-semibold">Install the extension</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Install Ordforråd from the
+        <a href="https://chromewebstore.google.com" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">Chrome Web Store</a>.
+        After installation, pin it to your toolbar for quick access.
+      </p>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Extension installed in toolbar
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">2</span>
+        <h2 class="text-xl font-semibold">Open Settings</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Click the Ordforråd icon in your toolbar to open the popup, then click the
+        <strong>gear icon</strong> in the top-right corner to open the settings panel.
+      </p>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Popup with gear icon highlighted
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">3</span>
+        <h2 class="text-xl font-semibold">Configure an AI provider</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Choose one of the supported providers and enter the required credentials:
+      </p>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-semibold text-sm mb-1">LM Studio</h3>
+          <p class="text-xs text-slate-500">Local &amp; free. No API key needed. Requires <a href="https://lmstudio.ai" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">LM Studio</a> running on your machine with a model loaded.</p>
+        </div>
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-semibold text-sm mb-1">OpenAI</h3>
+          <p class="text-xs text-slate-500">Requires an API key from <a href="https://platform.openai.com/api-keys" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">platform.openai.com</a>.</p>
+        </div>
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-semibold text-sm mb-1">Anthropic</h3>
+          <p class="text-xs text-slate-500">Requires an API key from <a href="https://console.anthropic.com/" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">console.anthropic.com</a>.</p>
+        </div>
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-semibold text-sm mb-1">Google AI</h3>
+          <p class="text-xs text-slate-500">Requires an API key from <a href="https://aistudio.google.com/apikey" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">aistudio.google.com</a>.</p>
+        </div>
+      </div>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Settings panel with provider and API key fields
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">4</span>
+        <h2 class="text-xl font-semibold">Select languages &amp; save</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Set your <strong>learning language</strong> (the language you're studying) and your
+        <strong>native language</strong> (for translations). Then select a model from the dropdown and click <strong>Save</strong>.
+      </p>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Language selects and Save button
+      </div>
+    </section>
+
+    <!-- Step 5 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">5</span>
+        <h2 class="text-xl font-semibold">Create your first card</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Go to any webpage, select a word, right-click, and choose
+        <strong>"Add to Ordforråd"</strong> from the context menu. The extension will generate a flashcard in the background. You'll see a notification when it's ready.
+      </p>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Context menu with "Add to Ordforråd"
+      </div>
+    </section>
+
+    <!-- Step 6 -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold shrink-0">6</span>
+        <h2 class="text-xl font-semibold">Review &amp; export</h2>
+      </div>
+      <p class="text-slate-600 leading-relaxed">
+        Open the popup to see all your saved cards. Each card shows the word, translation, pronunciation, example sentences, and a memory tip. When you're ready, click <strong>Anki Export</strong> to download a <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">.apkg</code> file you can import into <a href="https://apps.ankiweb.net" class="text-rose-500 underline underline-offset-2 hover:text-rose-400">Anki</a>.
+      </p>
+      <!-- screenshot placeholder -->
+      <div class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+        Screenshot: Popup with cards and export button
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 mt-10">
+    <div class="max-w-3xl mx-auto px-6 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+      <span>Ordforråd &middot; Open Source</span>
+      <div class="flex gap-4">
+        <a href="https://github.com/u8array/ordforraad" class="hover:text-slate-600">GitHub</a>
+        <a href="privacy-policy.html" class="hover:text-slate-600">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
