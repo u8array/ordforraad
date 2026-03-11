@@ -4,6 +4,7 @@
 
 import { getAllCards, deleteCard }           from '../storage/cardStorage.js';
 import { exportToApkg }                     from '../export/ankiExporter.js';
+import { isAvailable, addCards }            from '../export/ankiConnect.js';
 import { getConfig, saveConfig, LANGUAGES } from '../config/configStorage.js';
 import { fetchModels }                      from '../api/llmClient.js';
 import { t, localeName, cardCount }         from '../i18n/strings.js';
@@ -15,6 +16,7 @@ const elEmpty         = document.getElementById('state-empty');
 const elList          = document.getElementById('card-list');
 const elCount         = document.getElementById('card-count');
 const elExport        = document.getElementById('btn-export');
+const elAnki          = document.getElementById('btn-anki');
 const elToast         = document.getElementById('toast');
 const elBtnSettings   = document.getElementById('btn-settings');
 const elSettings      = document.getElementById('settings-panel');
@@ -46,7 +48,8 @@ async function init() {
   populateLanguageSelects(config.nativeLang);
   applyConfig(config);
   try {
-    const cards = await getAllCards();
+    const [cards, ankiUp] = await Promise.all([getAllCards(), isAvailable()]);
+    elAnki.hidden = !ankiUp;
     render(cards);
     updateSetupBanner(config, cards.length);
   } catch (err) {
@@ -275,8 +278,9 @@ elBtnSave.addEventListener('click', async () => {
 
 function render(cards) {
   elLoading.hidden = true;
-  elCount.textContent = cardCount(cards.length, currentStrings);
-  elExport.disabled   = cards.length === 0;
+  elCount.textContent  = cardCount(cards.length, currentStrings);
+  elExport.disabled    = cards.length === 0;
+  elAnki.disabled      = cards.length === 0;
 
   // Preserve skeletons across re-renders
   const skeletons = [...elList.querySelectorAll('[data-skeleton]')];
@@ -375,6 +379,7 @@ function removeSkeleton(word) {
 // ── Card events ───────────────────────────────────────────────────────────────
 
 elExport.addEventListener('click', handleExport);
+elAnki.addEventListener('click', handleAnkiSend);
 
 async function handleDelete(id) {
   await deleteCard(id);
@@ -382,6 +387,24 @@ async function handleDelete(id) {
     render(await getAllCards());
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
+  }
+}
+
+async function handleAnkiSend() {
+  elAnki.disabled      = true;
+  elAnki.textContent   = '…';
+  try {
+    const cards = await getAllCards();
+    const { added, skipped } = await addCards(cards);
+    const msg = skipped > 0
+      ? `${added} ${currentStrings.ankiAdded}, ${skipped} ${currentStrings.ankiSkipped}`
+      : `${added} ${currentStrings.ankiAdded}`;
+    showToast(msg);
+  } catch (err) {
+    showToast(`${currentStrings.ankiError}: ${err.message}`, true);
+  } finally {
+    elAnki.textContent = currentStrings.ankiSend;
+    elAnki.disabled    = false;
   }
 }
 

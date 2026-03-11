@@ -74,6 +74,10 @@ const STRINGS = {
     setupStep2:  'Wähle einen Anbieter und gib deinen API-Key ein',
     setupStep3:  'Wähle ein Modell und klicke auf Speichern',
     setupHint:   'Dann Rechtsklick auf ein beliebiges Wort, um deine erste Karteikarte zu erstellen.',
+    ankiSend:    'Zu Anki',
+    ankiAdded:   'hinzugefügt',
+    ankiSkipped: 'übersprungen',
+    ankiError:   'Anki-Fehler',
   },
 
   en: {
@@ -113,6 +117,10 @@ const STRINGS = {
     setupStep2:  'Choose a provider and enter your API key',
     setupStep3:  'Select a model, then click Save',
     setupHint:   'Then right-click any word on a webpage to create your first flashcard.',
+    ankiSend:    'Send to Anki',
+    ankiAdded:   'added',
+    ankiSkipped: 'skipped',
+    ankiError:   'Anki error',
   },
 
   da: {
@@ -152,6 +160,10 @@ const STRINGS = {
     setupStep2:  'Vælg en udbyder og indtast din API-nøgle',
     setupStep3:  'Vælg en model og klik på Gem',
     setupHint:   'Højreklik derefter på et vilkårligt ord for at oprette dit første kort.',
+    ankiSend:    'Send til Anki',
+    ankiAdded:   'tilføjet',
+    ankiSkipped: 'sprunget over',
+    ankiError:   'Anki-fejl',
   },
 
   fr: {
@@ -191,6 +203,10 @@ const STRINGS = {
     setupStep2:  'Choisissez un fournisseur et entrez votre clé API',
     setupStep3:  'Sélectionnez un modèle, puis cliquez sur Enregistrer',
     setupHint:   'Ensuite, faites un clic droit sur n\'importe quel mot pour créer votre première carte.',
+    ankiSend:    'Envoyer à Anki',
+    ankiAdded:   'ajouté(s)',
+    ankiSkipped: 'ignoré(s)',
+    ankiError:   'Erreur Anki',
   },
 
   es: {
@@ -230,6 +246,10 @@ const STRINGS = {
     setupStep2:  'Elige un proveedor e introduce tu clave API',
     setupStep3:  'Selecciona un modelo y haz clic en Guardar',
     setupHint:   'Luego haz clic derecho en cualquier palabra para crear tu primera tarjeta.',
+    ankiSend:    'Enviar a Anki',
+    ankiAdded:   'añadida(s)',
+    ankiSkipped: 'omitida(s)',
+    ankiError:   'Error de Anki',
   },
 
   it: {
@@ -269,6 +289,10 @@ const STRINGS = {
     setupStep2:  'Scegli un provider e inserisci la tua chiave API',
     setupStep3:  'Seleziona un modello e clicca su Salva',
     setupHint:   'Poi clicca col destro su qualsiasi parola per creare la tua prima scheda.',
+    ankiSend:    'Invia ad Anki',
+    ankiAdded:   'aggiunta/e',
+    ankiSkipped: 'saltata/e',
+    ankiError:   'Errore Anki',
   },
 
   pt: {
@@ -308,6 +332,10 @@ const STRINGS = {
     setupStep2:  'Escolha um provedor e insira sua chave API',
     setupStep3:  'Selecione um modelo e clique em Salvar',
     setupHint:   'Depois, clique com o botão direito em qualquer palavra para criar seu primeiro cartão.',
+    ankiSend:    'Enviar ao Anki',
+    ankiAdded:   'adicionada(s)',
+    ankiSkipped: 'ignorada(s)',
+    ankiError:   'Erro Anki',
   },
 
   nl: {
@@ -347,6 +375,10 @@ const STRINGS = {
     setupStep2:  'Kies een aanbieder en voer je API-sleutel in',
     setupStep3:  'Selecteer een model en klik op Opslaan',
     setupHint:   'Klik dan met de rechtermuisknop op een woord om je eerste kaart te maken.',
+    ankiSend:    'Naar Anki',
+    ankiAdded:   'toegevoegd',
+    ankiSkipped: 'overgeslagen',
+    ankiError:   'Anki-fout',
   },
 
   sv: {
@@ -386,6 +418,10 @@ const STRINGS = {
     setupStep2:  'Välj en leverantör och ange din API-nyckel',
     setupStep3:  'Välj en modell och klicka på Spara',
     setupHint:   'Högerklicka sedan på valfritt ord för att skapa ditt första kort.',
+    ankiSend:    'Skicka till Anki',
+    ankiAdded:   'tillagd/a',
+    ankiSkipped: 'hoppad/e',
+    ankiError:   'Anki-fel',
   },
 
   nb: {
@@ -425,6 +461,10 @@ const STRINGS = {
     setupStep2:  'Velg en leverandør og skriv inn API-nøkkelen din',
     setupStep3:  'Velg en modell og klikk på Lagre',
     setupHint:   'Høyreklikk deretter på et vilkårlig ord for å opprette ditt første kort.',
+    ankiSend:    'Send til Anki',
+    ankiAdded:   'lagt til',
+    ankiSkipped: 'hoppet over',
+    ankiError:   'Anki-feil',
   },
 
   fi: {
@@ -464,6 +504,10 @@ const STRINGS = {
     setupStep2:  'Valitse palveluntarjoaja ja syötä API-avaimesi',
     setupStep3:  'Valitse malli ja napsauta Tallenna',
     setupHint:   'Napsauta sitten mitä tahansa sanaa hiiren kakkospainikkeella luodaksesi ensimmäisen korttisi.',
+    ankiSend:    'Lähetä Ankiin',
+    ankiAdded:   'lisätty',
+    ankiSkipped: 'ohitettu',
+    ankiError:   'Anki-virhe',
   },
 
   pl: {
@@ -503,6 +547,10 @@ const STRINGS = {
     setupStep2:  'Wybierz dostawcę i wpisz swój klucz API',
     setupStep3:  'Wybierz model i kliknij Zapisz',
     setupHint:   'Następnie kliknij prawym przyciskiem na dowolne słowo, aby utworzyć pierwszą kartę.',
+    ankiSend:    'Wyślij do Anki',
+    ankiAdded:   'dodano',
+    ankiSkipped: 'pominięto',
+    ankiError:   'Błąd Anki',
   },
 
   cs: {
@@ -542,6 +590,10 @@ const STRINGS = {
     setupStep2:  'Vyberte poskytovatele a zadejte svůj API klíč',
     setupStep3:  'Vyberte model a klikněte na Uložit',
     setupHint:   'Poté klikněte pravým tlačítkem na libovolné slovo a vytvořte svou první kartu.',
+    ankiSend:    'Odeslat do Anki',
+    ankiAdded:   'přidáno',
+    ankiSkipped: 'přeskočeno',
+    ankiError:   'Chyba Anki',
   },
 
   ru: {
@@ -581,6 +633,10 @@ const STRINGS = {
     setupStep2:  'Выберите поставщика и введите API-ключ',
     setupStep3:  'Выберите модель и нажмите Сохранить',
     setupHint:   'Затем щёлкните правой кнопкой мыши по любому слову, чтобы создать первую карточку.',
+    ankiSend:    'Отправить в Anki',
+    ankiAdded:   'добавлено',
+    ankiSkipped: 'пропущено',
+    ankiError:   'Ошибка Anki',
   },
 
   tr: {
@@ -620,6 +676,10 @@ const STRINGS = {
     setupStep2:  'Bir sağlayıcı seçin ve API anahtarınızı girin',
     setupStep3:  'Bir model seçin ve Kaydet\'e tıklayın',
     setupHint:   'Ardından herhangi bir kelimeye sağ tıklayarak ilk kartınızı oluşturun.',
+    ankiSend:    "Anki'ye Gönder",
+    ankiAdded:   'eklendi',
+    ankiSkipped: 'atlandı',
+    ankiError:   'Anki hatası',
   },
 
   hu: {
@@ -659,6 +719,10 @@ const STRINGS = {
     setupStep2:  'Válasszon szolgáltatót és adja meg API-kulcsát',
     setupStep3:  'Válasszon modellt és kattintson a Mentés gombra',
     setupHint:   'Ezután kattintson jobb gombbal bármely szóra az első kártya létrehozásához.',
+    ankiSend:    'Küldés Ankiba',
+    ankiAdded:   'hozzáadva',
+    ankiSkipped: 'kihagyva',
+    ankiError:   'Anki hiba',
   },
 
   el: {
@@ -698,6 +762,10 @@ const STRINGS = {
     setupStep2:  'Επιλέξτε πάροχο και εισάγετε το κλειδί API σας',
     setupStep3:  'Επιλέξτε μοντέλο και κάντε κλικ στο Αποθήκευση',
     setupHint:   'Στη συνέχεια κάντε δεξί κλικ σε οποιαδήποτε λέξη για να δημιουργήσετε την πρώτη σας κάρτα.',
+    ankiSend:    'Αποστολή στο Anki',
+    ankiAdded:   'προστέθηκε/αν',
+    ankiSkipped: 'παρακάμφθηκε/αν',
+    ankiError:   'Σφάλμα Anki',
   },
 
   is: {
@@ -737,6 +805,10 @@ const STRINGS = {
     setupStep2:  'Veldu veitanda og sláðu inn API-lykilinn þinn',
     setupStep3:  'Veldu líkan og smelltu á Vista',
     setupHint:   'Hægrismelltu svo á hvaða orð sem er til að búa til fyrsta spjaldið þitt.',
+    ankiSend:    'Senda í Anki',
+    ankiAdded:   'bætt við',
+    ankiSkipped: 'sleppt',
+    ankiError:   'Anki villa',
   },
 
   ja: {
@@ -777,6 +849,10 @@ const STRINGS = {
     setupStep2:  'プロバイダーを選択しAPIキーを入力',
     setupStep3:  'モデルを選択して保存をクリック',
     setupHint:   'その後、任意の単語を右クリックして最初のカードを作成してください。',
+    ankiSend:    'Ankiに送る',
+    ankiAdded:   '追加済み',
+    ankiSkipped: 'スキップ',
+    ankiError:   'Ankiエラー',
   },
 
   ko: {
@@ -817,6 +893,10 @@ const STRINGS = {
     setupStep2:  '제공자를 선택하고 API 키를 입력하세요',
     setupStep3:  '모델을 선택하고 저장을 클릭하세요',
     setupHint:   '그런 다음 웹페이지에서 아무 단어나 우클릭하여 첫 번째 카드를 만드세요.',
+    ankiSend:    'Anki로 보내기',
+    ankiAdded:   '추가됨',
+    ankiSkipped: '건너뜀',
+    ankiError:   'Anki 오류',
   },
 
   zh: {
@@ -857,6 +937,10 @@ const STRINGS = {
     setupStep2:  '选择提供商并输入API密钥',
     setupStep3:  '选择模型，然后点击保存',
     setupHint:   '然后右键点击网页上的任意单词来创建您的第一张卡片。',
+    ankiSend:    '发送到Anki',
+    ankiAdded:   '已添加',
+    ankiSkipped: '已跳过',
+    ankiError:   'Anki错误',
   },
 
   ar: {
@@ -896,6 +980,10 @@ const STRINGS = {
     setupStep2:  'اختر مزوِّدًا وأدخل مفتاح API الخاص بك',
     setupStep3:  'اختر نموذجًا ثم انقر على حفظ',
     setupHint:   'ثم انقر بزر الماوس الأيمن على أي كلمة لإنشاء بطاقتك الأولى.',
+    ankiSend:    'إرسال إلى Anki',
+    ankiAdded:   'مضاف',
+    ankiSkipped: 'تخطي',
+    ankiError:   'خطأ في Anki',
   },
 
 };
