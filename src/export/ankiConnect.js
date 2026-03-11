@@ -19,6 +19,7 @@ async function invoke(action, params = {}) {
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ action, version: VERSION, params }),
   });
+  if (!res.ok) throw new Error(`AnkiConnect HTTP ${res.status}`);
   const { result, error } = await res.json();
   if (error) throw new Error(error);
   return result;
@@ -54,6 +55,7 @@ export async function addCards(cards) {
   }));
 
   const results = await invoke('addNotes', { notes });
+  if (!Array.isArray(results)) throw new Error('Unexpected response from AnkiConnect');
   const added   = results.filter(id => id !== null).length;
   return { added, skipped: results.length - added };
 }

@@ -48,10 +48,11 @@ async function init() {
   populateLanguageSelects(config.nativeLang);
   applyConfig(config);
   try {
-    const [cards, ankiUp] = await Promise.all([getAllCards(), isAvailable()]);
-    elAnki.hidden = !ankiUp;
+    const cards = await getAllCards();
     render(cards);
     updateSetupBanner(config, cards.length);
+    // Check AnkiConnect without blocking the initial render
+    isAvailable().then(ankiUp => { elAnki.hidden = !ankiUp; }).catch(() => {});
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
     updateSetupBanner(config, 0);
