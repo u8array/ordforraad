@@ -14,6 +14,7 @@ import { saveCard }                    from '../storage/cardStorage.js';
 import { createCard, validateLlmData } from '../shared/cardSchema.js';
 import { getConfig }                   from '../config/configStorage.js';
 import { t }                           from '../i18n/strings.js';
+import { pushSync }                    from '../sync/syncManager.js';
 
 const MENU_ID = 'ordforrad_add';
 
@@ -71,6 +72,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const card = createCard(word, context, tab.url ?? '', data);
 
     await saveCard(card);
+    pushSync().catch(err => console.warn('[Ordforråd] Sync push failed:', err));
     await chrome.storage.session.remove('lastError');
     chrome.action.setBadgeText({ text: '' });
     chrome.runtime.sendMessage({ type: 'CARD_ADDED', card, word }).catch(() => {});

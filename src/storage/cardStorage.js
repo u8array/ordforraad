@@ -5,7 +5,7 @@
  * Cards are stored as an array under a single key.
  */
 
-const STORAGE_KEY = 'vocab_cards';
+import { CARDS_KEY as STORAGE_KEY } from '../shared/storageKeys.js';
 
 /** @returns {Promise<import('../shared/cardSchema.js').VocabCard[]>} */
 export async function getAllCards() {
@@ -38,6 +38,11 @@ export async function deleteCard(id) {
   const cards    = await getAllCards();
   const filtered = cards.filter(c => c.id !== id);
   await chrome.storage.local.set({ [STORAGE_KEY]: filtered });
+}
+
+/** Replaces all stored cards at once (used by sync after merge). */
+export async function replaceAllCards(cards) {
+  await chrome.storage.local.set({ [STORAGE_KEY]: cards });
 }
 
 /** Deletes all stored cards. */

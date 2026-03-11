@@ -19,6 +19,14 @@
       data-i18n="export" disabled>
       Anki-Export
     </button>
+    <button id="btn-sync"
+      class="text-white/50 hover:text-white hover:bg-white/10 rounded p-1.5 transition-colors cursor-pointer"
+      data-i18n-title="sync" title="Sync">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+        <path d="M2.5 12a9.5 9.5 0 1 1 19 0"/>
+        <path d="M16.5 8l5 4-5 4"/>
+      </svg>
+    </button>
     <button id="btn-settings"
       class="text-white/50 hover:text-white hover:bg-white/10 rounded p-1.5 transition-colors cursor-pointer"
       data-i18n-title="settings" title="Einstellungen">
@@ -28,6 +36,33 @@
       </svg>
     </button>
   </header>
+
+  <!-- Sync Panel -->
+  <section id="sync-panel" class="bg-white dark:bg-[#292a2d] border-b border-slate-200 dark:border-[#3c4043] px-4 py-3 space-y-2.5 shrink-0" hidden>
+    <p class="text-[11px] font-semibold text-slate-400 dark:text-[#9aa0a6] uppercase tracking-wide" data-i18n="syncTitle">Sync</p>
+
+    <div id="sync-disconnected">
+      <p class="text-xs text-slate-500 dark:text-[#9aa0a6] mb-2" data-i18n="syncDesc">Sync your cards across devices via Google Drive.</p>
+      <button id="btn-connect-drive"
+        class="w-full bg-rose-500 hover:bg-rose-400 text-white text-xs font-semibold py-2 rounded-md transition-colors cursor-pointer"
+        data-i18n="syncConnect">Connect Google Drive</button>
+    </div>
+
+    <div id="sync-connected" hidden>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs text-slate-600 dark:text-[#bdc1c6]">
+          <span class="inline-block w-2 h-2 rounded-full bg-green-400 mr-1.5"></span>
+          <span data-i18n="syncConnected">Google Drive connected</span>
+        </span>
+      </div>
+      <p id="sync-last" class="text-[11px] text-slate-400 dark:text-[#9aa0a6] mb-2"></p>
+      <button id="btn-disconnect-drive"
+        class="w-full border border-slate-200 dark:border-[#5f6368] text-slate-500 dark:text-[#9aa0a6] hover:border-rose-400 hover:text-rose-500 text-xs font-semibold py-2 rounded-md transition-colors cursor-pointer"
+        data-i18n="syncDisconnect">Disconnect</button>
+    </div>
+
+    <p id="sync-error" class="text-xs text-rose-600 dark:text-[#f0a0a0] bg-rose-50 dark:bg-[#3c2020] rounded-md px-2.5 py-1.5" hidden></p>
+  </section>
 
   <!-- Settings Panel -->
   <section id="settings-panel" class="bg-white dark:bg-[#292a2d] border-b border-slate-200 dark:border-[#3c4043] px-4 py-3 space-y-2.5 shrink-0" hidden>
