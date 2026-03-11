@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "단어를 우클릭하여 LLM으로 어휘 카드를 만들고 Anki로 내보내세요."
+  }
+}

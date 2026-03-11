@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Hægrismelltu á hvaða orð sem er til að búa til orðaforðaspjöld með LLM og flytja út í Anki."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "انقر بزر الماوس الأيمن على أي كلمة لإنشاء بطاقات المفردات باستخدام LLM وتصديرها إلى Anki."
+  }
+}

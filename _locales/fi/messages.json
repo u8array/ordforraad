@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Napsauta hiiren kakkospainikkeella sanaa luodaksesi sanastokortit LLM:n avulla ja viedäksesi Ankiin."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Rechtsklik op een woord om woordenschatkaarten te maken met een LLM en te exporteren naar Anki."
+  }
+}

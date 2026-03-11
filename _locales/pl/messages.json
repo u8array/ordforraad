@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Kliknij prawym przyciskiem myszy dowolne słowo, aby tworzyć karty słownictwa z LLM i eksportować do Anki."
+  }
+}

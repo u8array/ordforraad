@@ -7,6 +7,44 @@
 
 const CONFIG_KEY = 'user_config';
 
+/** Maps ISO language codes to German language keys (reverse of LANG_CODE). */
+const LANG_CODE_REVERSE = {
+  ar: 'Arabisch',
+  zh: 'Chinesisch (Mandarin)',
+  da: 'Dänisch',
+  de: 'Deutsch',
+  en: 'Englisch',
+  fi: 'Finnisch',
+  fr: 'Französisch',
+  el: 'Griechisch',
+  is: 'Isländisch',
+  it: 'Italienisch',
+  ja: 'Japanisch',
+  ko: 'Koreanisch',
+  nl: 'Niederländisch',
+  nb: 'Norwegisch (Bokmål)',
+  no: 'Norwegisch (Bokmål)',
+  pl: 'Polnisch',
+  pt: 'Portugiesisch',
+  ru: 'Russisch',
+  sv: 'Schwedisch',
+  es: 'Spanisch',
+  cs: 'Tschechisch',
+  tr: 'Türkisch',
+  hu: 'Ungarisch',
+};
+
+/**
+ * Detects the native language from the browser locale.
+ * Falls back to 'Englisch' if the locale is not supported.
+ * @returns {string}
+ */
+function detectNativeLang() {
+  const locale = chrome.i18n.getUILanguage?.() ?? navigator.language ?? 'en';
+  const code = locale.split('-')[0].toLowerCase();
+  return LANG_CODE_REVERSE[code] ?? 'Englisch';
+}
+
 /** All selectable languages (alphabetical). */
 export const LANGUAGES = [
   'Arabisch',
@@ -60,7 +98,11 @@ export const DEFAULT_CONFIG = {
  */
 async function getRawConfig() {
   const result = await chrome.storage.local.get(CONFIG_KEY);
-  const raw = { ...DEFAULT_CONFIG, ...(result[CONFIG_KEY] ?? {}) };
+  const saved = result[CONFIG_KEY];
+  const defaults = saved
+    ? DEFAULT_CONFIG
+    : { ...DEFAULT_CONFIG, nativeLang: detectNativeLang() };
+  const raw = { ...defaults, ...(saved ?? {}) };
 
   // Migration: move legacy single apiKey into apiKeys map
   if (typeof raw.apiKey === 'string' && raw.apiKey) {

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Clic derecho en cualquier palabra para crear tarjetas de vocabulario con un LLM y exportarlas a Anki."
+  }
+}
