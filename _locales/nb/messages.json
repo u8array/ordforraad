@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Høyreklikk på et ord for å lage vokabularkort med en LLM og eksportere til Anki."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "右键单击任意单词，使用LLM创建词汇卡片并导出到Anki。"
+  }
+}

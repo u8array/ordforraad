@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Herhangi bir kelimeye sağ tıklayarak LLM ile kelime kartları oluşturun ve Anki'ye aktarın."
+  }
+}

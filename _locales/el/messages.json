@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Δεξί κλικ σε οποιαδήποτε λέξη για δημιουργία καρτών λεξιλογίου με LLM και εξαγωγή στο Anki."
+  }
+}

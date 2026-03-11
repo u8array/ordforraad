@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Ordforråd"
+  },
+  "extDescription": {
+    "message": "Klikněte pravým tlačítkem na libovolné slovo a vytvořte vokabulářové karty pomocí LLM a exportujte do Anki."
+  }
+}
