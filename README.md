@@ -14,7 +14,7 @@ So I built this. Right-click any word on any page and a complete card comes back
 
 ## Getting Started
 
-Follow the [setup guide](https://u8array.github.io/ordforraad/guide.html).
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/ordforr%C3%A5d/fjlbelhdclhaohgibdilibokgjkoolih) and follow the [setup guide](https://u8array.github.io/ordforraad/guide.html).
 
 ---
 
