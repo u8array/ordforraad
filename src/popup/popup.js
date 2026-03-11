@@ -2,11 +2,12 @@
  * Popup controller
  */
 
-import { getAllCards, deleteCard }           from '../storage/cardStorage.js';
-import { exportToApkg }                     from '../export/ankiExporter.js';
-import { getConfig, saveConfig, LANGUAGES } from '../config/configStorage.js';
-import { fetchModels }                      from '../api/llmClient.js';
-import { t, localeName, cardCount }         from '../i18n/strings.js';
+import { getAllCards, deleteCard }                        from '../storage/cardStorage.js';
+import { exportToApkg }                                  from '../export/ankiExporter.js';
+import { getConfig, saveConfig, LANGUAGES }              from '../config/configStorage.js';
+import { fetchModels }                                   from '../api/llmClient.js';
+import { t, localeName, cardCount }                      from '../i18n/strings.js';
+import { getSyncState, connectDrive, disconnectDrive, initSync } from '../sync/syncManager.js';
 
 // ── DOM references ────────────────────────────────────────────────────────────
 
@@ -33,9 +34,72 @@ const elSettingsError = document.getElementById('settings-error');
 const elErrorBanner   = document.getElementById('error-banner');
 const elErrorMsg      = document.getElementById('error-banner-msg');
 const elDismissError  = document.getElementById('btn-dismiss-error');
+const elBtnSync       = document.getElementById('btn-sync');
+const elSyncPanel     = document.getElementById('sync-panel');
+const elSyncDisconn   = document.getElementById('sync-disconnected');
+const elSyncConn      = document.getElementById('sync-connected');
+const elSyncLast      = document.getElementById('sync-last');
+const elSyncError     = document.getElementById('sync-error');
+const elBtnConnect    = document.getElementById('btn-connect-drive');
+const elBtnDisconnect = document.getElementById('btn-disconnect-drive');
 
 // Currently loaded strings (set after config is loaded)
 let currentStrings = t('Deutsch');
+
+// ── Sync panel ────────────────────────────────────────────────────────────────
+
+async function renderSyncPanel() {
+  const state = await getSyncState();
+  const connected = state.provider === 'gdrive';
+  elSyncDisconn.hidden = connected;
+  elSyncConn.hidden    = !connected;
+  elSyncError.hidden   = true;
+  elBtnSync.classList.toggle('text-green-400', connected);
+  elBtnSync.classList.toggle('text-white/50',  !connected);
+  if (connected && state.lastSync) {
+    const d = new Date(state.lastSync);
+    elSyncLast.textContent = `${currentStrings.syncLast} ${d.toLocaleString()}`;
+  } else {
+    elSyncLast.textContent = '';
+  }
+}
+
+elBtnSync.addEventListener('click', () => {
+  const opening = elSyncPanel.hidden;
+  elSyncPanel.hidden   = !opening;
+  elSettings.hidden    = true;
+});
+
+elBtnConnect.addEventListener('click', async () => {
+  elBtnConnect.disabled = true;
+  elSyncError.hidden    = true;
+  try {
+    await connectDrive();
+    const cards = await getAllCards();
+    render(cards);
+    await renderSyncPanel();
+    showToast(currentStrings.syncConnected);
+  } catch (err) {
+    elSyncError.textContent = err.message;
+    elSyncError.hidden = false;
+  } finally {
+    elBtnConnect.disabled = false;
+  }
+});
+
+elBtnDisconnect.addEventListener('click', async () => {
+  elBtnDisconnect.disabled = true;
+  try {
+    await disconnectDrive();
+    await renderSyncPanel();
+    showToast(currentStrings.syncDisconnected);
+  } catch (err) {
+    elSyncError.textContent = err.message;
+    elSyncError.hidden = false;
+  } finally {
+    elBtnDisconnect.disabled = false;
+  }
+});
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -46,13 +110,19 @@ async function init() {
   populateLanguageSelects(config.nativeLang);
   applyConfig(config);
   try {
-    const cards = await getAllCards();
+    // Attempt Drive sync first; falls back to local on error
+    const synced = await initSync().catch(err => {
+      showToast(`${currentStrings.syncError}: ${err.message}`, true);
+      return null;
+    });
+    const cards = synced ?? await getAllCards();
     render(cards);
     updateSetupBanner(config, cards.length);
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
     updateSetupBanner(config, 0);
   }
+  await renderSyncPanel();
 
   // Show last error if any
   const { lastError } = await chrome.storage.session.get('lastError');

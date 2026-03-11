@@ -5,7 +5,7 @@
  * and default values.
  */
 
-const CONFIG_KEY = 'user_config';
+import { CONFIG_KEY } from '../shared/storageKeys.js';
 
 /** Maps ISO language codes to German language keys (reverse of LANG_CODE). */
 const LANG_CODE_REVERSE = {
