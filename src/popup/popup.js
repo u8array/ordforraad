@@ -54,6 +54,8 @@ async function renderSyncPanel() {
   elSyncDisconn.hidden = connected;
   elSyncConn.hidden    = !connected;
   elSyncError.hidden   = true;
+  elBtnSync.classList.toggle('text-green-400', connected);
+  elBtnSync.classList.toggle('text-white/50',  !connected);
   if (connected && state.lastSync) {
     const d = new Date(state.lastSync);
     elSyncLast.textContent = `${currentStrings.syncLast} ${d.toLocaleString()}`;
