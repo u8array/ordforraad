@@ -32,14 +32,13 @@ export async function isAvailable() {
 }
 
 export async function addCards(cards, targetLang, nativeLang) {
-  const parts = buildModelParts(targetLang, nativeLang);
-
-  await ensureModel(parts);
+  const parts     = buildModelParts(targetLang, nativeLang);
+  const modelName = await ensureModel(parts);
   await invoke('createDeck', { deck: parts.deck });
 
   const notes = cards.map(card => ({
     deckName:  parts.deck,
-    modelName: parts.model,
+    modelName,
     fields:    cardToFieldMap(card, parts.schema),
     options:   { allowDuplicate: false, duplicateScope: 'deck' },
     tags:      [TAG],
@@ -54,34 +53,61 @@ export async function addCards(cards, targetLang, nativeLang) {
   return { added, duplicates };
 }
 
-// Existing-model template/CSS sync runs once per popup session.
-// Legacy migration (e.g. old 'Beispiel DA' field): rename manually in Anki or delete the model.
-const syncedThisSession = new Set();
+// Fork to "name (2)" when an incompatible legacy model squats the base name.
+const resolvedNames = new Map();
+
+// Safety bound — 9 collisions is far beyond any realistic legacy state.
+const MAX_NAME_COLLISIONS = 10;
 
 async function ensureModel(parts) {
+  const baseName = parts.model;
+  const cached   = resolvedNames.get(baseName);
+  if (cached) return cached;
+
+  for (let i = 0; i < MAX_NAME_COLLISIONS; i++) {
+    const name = i === 0 ? baseName : `${baseName} (${i + 1})`;
+
+    if (await tryCreateModel(parts, name)) {
+      resolvedNames.set(baseName, name);
+      return name;
+    }
+    if (await isCompatible(name, parts.fieldNames)) {
+      await syncTemplatesAndCss(parts, name);
+      resolvedNames.set(baseName, name);
+      return name;
+    }
+  }
+  throw new Error(`Could not allocate a free model name for "${baseName}"`);
+}
+
+async function tryCreateModel(parts, name) {
   try {
     await invoke('createModel', {
-      modelName:     parts.model,
+      modelName:     name,
       inOrderFields: parts.fieldNames,
       css:           parts.css,
       isCloze:       false,
       cardTemplates: [{ Name: parts.templateName, Front: parts.qfmt, Back: parts.afmt }],
     });
-    syncedThisSession.add(parts.model);
-    return;
+    return true;
   } catch (err) {
-    if (!/already exists/i.test(err.message)) throw err;
+    if (/already exists/i.test(err.message)) return false;
+    throw err;
   }
-  if (syncedThisSession.has(parts.model)) return;
+}
 
+async function isCompatible(name, expectedFields) {
+  const actual = await invoke('modelFieldNames', { modelName: name });
+  return actual.length === expectedFields.length
+      && actual.every((f, i) => f === expectedFields[i]);
+}
+
+async function syncTemplatesAndCss(parts, name) {
   await invoke('updateModelTemplates', {
     model: {
-      name: parts.model,
+      name,
       templates: { [parts.templateName]: { Front: parts.qfmt, Back: parts.afmt } },
     },
   });
-  await invoke('updateModelStyling', {
-    model: { name: parts.model, css: parts.css },
-  });
-  syncedThisSession.add(parts.model);
+  await invoke('updateModelStyling', { model: { name, css: parts.css } });
 }
