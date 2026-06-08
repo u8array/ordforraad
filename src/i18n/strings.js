@@ -1,37 +1,9 @@
 /**
  * Internationalisation: UI strings for all 22 supported languages.
  *
- * Language names in dropdowns are localised via Intl.DisplayNames
- * (no manual 22×22 translation table needed).
+ * Language identity is the IETF code (`'de'`, `'da'`, …). Display names for
+ * dropdowns are localised via Intl.DisplayNames at call time.
  */
-
-// ── ISO code mapping ──────────────────────────────────────────────────────────
-
-/** German key (as stored in config) → IETF language tag */
-export const LANG_CODE = {
-  'Arabisch':              'ar',
-  'Chinesisch (Mandarin)': 'zh',
-  'Dänisch':               'da',
-  'Deutsch':               'de',
-  'Englisch':              'en',
-  'Finnisch':              'fi',
-  'Französisch':           'fr',
-  'Griechisch':            'el',
-  'Isländisch':            'is',
-  'Italienisch':           'it',
-  'Japanisch':             'ja',
-  'Koreanisch':            'ko',
-  'Niederländisch':        'nl',
-  'Norwegisch (Bokmål)':   'nb',
-  'Polnisch':              'pl',
-  'Portugiesisch':         'pt',
-  'Russisch':              'ru',
-  'Schwedisch':            'sv',
-  'Spanisch':              'es',
-  'Tschechisch':           'cs',
-  'Türkisch':              'tr',
-  'Ungarisch':             'hu',
-};
 
 // ── UI string table ───────────────────────────────────────────────────────────
 
@@ -1342,34 +1314,30 @@ const STRINGS = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Supported IETF language codes (also the keys of STRINGS). */
+export const SUPPORTED_LANGS = Object.keys(STRINGS);
+
 /**
- * Returns the string object for the given native language.
- * Falls back to German.
- * @param {string} nativeLangKey  German key, e.g. "Englisch"
- * @returns {typeof STRINGS.de}
+ * Returns the string object for the given native language code.
+ * Falls back to English, then German if English is somehow missing.
+ * @param {string} nativeCode  IETF code, e.g. "en"
+ * @returns {typeof STRINGS.en}
  */
-export function t(nativeLangKey) {
-  const code = LANG_CODE[nativeLangKey] ?? 'de';
-  return STRINGS[code] ?? STRINGS.de;
+export function t(nativeCode) {
+  return STRINGS[nativeCode] ?? STRINGS.en ?? STRINGS.de;
 }
 
 /**
  * Returns the localized display name of a language.
- * Uses Intl.DisplayNames (no manual mapping required).
- *
- * @param {string} langKey      German key of the language to display ("Dänisch")
- * @param {string} inLangKey    German key of the UI language ("Englisch")
- * @returns {string}
+ * @param {string} langCode  Language to display, e.g. "da"
+ * @param {string} inCode    UI language code, e.g. "en"
  */
-export function localeName(langKey, inLangKey) {
+export function localeName(langCode, inCode) {
   try {
-    const uiCode     = LANG_CODE[inLangKey]  ?? 'de';
-    const targetCode = LANG_CODE[langKey];
-    if (!targetCode) return langKey;
-    const dn = new Intl.DisplayNames([uiCode], { type: 'language' });
-    return dn.of(targetCode) ?? langKey;
+    const dn = new Intl.DisplayNames([inCode], { type: 'language' });
+    return dn.of(langCode) ?? langCode;
   } catch {
-    return langKey;
+    return langCode;
   }
 }
 

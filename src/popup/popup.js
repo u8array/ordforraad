@@ -37,7 +37,7 @@ const elErrorMsg      = document.getElementById('error-banner-msg');
 const elDismissError  = document.getElementById('btn-dismiss-error');
 
 // Currently loaded strings (set after config is loaded)
-let currentStrings = t('Deutsch');
+let currentStrings = t('en');
 let ankiAvailable  = false;
 let lastCards      = [];
 let lastCardCount  = 0;
@@ -118,13 +118,16 @@ function applyI18n(s) {
 
 // ── Language ───────────────────────────────────────────────────────────────────
 
-/** Populates both language dropdowns with localized display names. */
-function populateLanguageSelects(nativeLangKey) {
+/** Populates both language dropdowns with localized display names, sorted. */
+function populateLanguageSelects(nativeCode) {
+  const sorted = [...LANGUAGES].sort((a, b) =>
+    localeName(a, nativeCode).localeCompare(localeName(b, nativeCode), nativeCode),
+  );
   [elSelTarget, elSelNative].forEach(sel => {
     const current = sel.value;
     sel.innerHTML = '';
-    for (const lang of LANGUAGES) {
-      sel.appendChild(new Option(localeName(lang, nativeLangKey), lang));
+    for (const code of sorted) {
+      sel.appendChild(new Option(localeName(code, nativeCode), code));
     }
     if (current) sel.value = current;
   });
@@ -355,10 +358,10 @@ function buildCard(card) {
         <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6] italic">${esc(card.pronunciation)}</div>
       </div>
 
-      ${card.exampleDA ? `
+      ${card.exampleTarget ? `
       <div class="pl-2.5 border-l-2 border-slate-100 dark:border-[#3c4043] space-y-0.5">
-        <div class="text-[11px] text-slate-600 dark:text-[#bdc1c6] italic">${esc(card.exampleDA)}</div>
-        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6]">${esc(card.exampleDE)}</div>
+        <div class="text-[11px] text-slate-600 dark:text-[#bdc1c6] italic">${esc(card.exampleTarget)}</div>
+        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6]">${esc(card.exampleNative)}</div>
       </div>` : ''}
 
       ${card.memoryTip ? `

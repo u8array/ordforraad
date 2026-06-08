@@ -33,7 +33,7 @@ export async function fetchModels(config) {
 export async function fetchCardData(word, context, config) {
   const model  = config.model || await fetchActiveModel(fetchModels, config);
   const s      = t(config.nativeLang);
-  const target = localeName(config.targetLang, 'Englisch');
+  const target = localeName(config.targetLang, 'en');
 
   let response;
   try {

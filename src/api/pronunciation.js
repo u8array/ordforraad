@@ -5,8 +5,6 @@
  * (caller falls back to LLM pronunciation).
  */
 
-import { LANG_CODE } from '../i18n/strings.js';
-
 const WIKT_API = 'https://en.wiktionary.org/w/api.php';
 
 /** ISO language code → Wiktionary section heading */
@@ -38,12 +36,11 @@ const CODE_TO_HEADING = {
 /**
  * Fetch IPA pronunciation from Wiktionary.
  * @param {string} word
- * @param {string} targetLang  German config key, e.g. "Dänisch"
+ * @param {string} targetCode  IETF code, e.g. "da"
  * @returns {Promise<string|null>}  e.g. "[ˈhunə]" or null
  */
-export async function fetchPronunciation(word, targetLang) {
-  const code    = LANG_CODE[targetLang];
-  const heading = code && CODE_TO_HEADING[code];
+export async function fetchPronunciation(word, targetCode) {
+  const heading = CODE_TO_HEADING[targetCode];
   if (!heading) return null;
 
   const section = await fetchLangSection(word, heading);
@@ -53,7 +50,7 @@ export async function fetchPronunciation(word, targetLang) {
   if (ipa) return ipa;
 
   // Inflected forms (e.g. "embedsmænd") have no IPA — follow base form link
-  const base = extractBaseForm(section, code);
+  const base = extractBaseForm(section, targetCode);
   if (!base || base === word) return null;
 
   const baseSection = await fetchLangSection(base, heading);
