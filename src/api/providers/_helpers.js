@@ -24,8 +24,8 @@ export function throwHttpError(provider, status, nativeLang) {
 /** Builds the system prompt (identical across all providers). */
 export function buildSystemPrompt({ targetLang, nativeLang }) {
   // Use English language names → best LLM reliability
-  const target = localeName(targetLang, 'Englisch');
-  const native = localeName(nativeLang, 'Englisch');
+  const target = localeName(targetLang, 'en');
+  const native = localeName(nativeLang, 'en');
 
   return `\
 You are a language expert helping to build ${target} vocabulary for a ${native}-speaking learner.

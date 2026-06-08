@@ -37,7 +37,7 @@ const elErrorMsg      = document.getElementById('error-banner-msg');
 const elDismissError  = document.getElementById('btn-dismiss-error');
 
 // Currently loaded strings (set after config is loaded)
-let currentStrings = t('Deutsch');
+let currentStrings = t('en');
 let ankiAvailable  = false;
 let lastCards      = [];
 let lastCardCount  = 0;
@@ -118,13 +118,16 @@ function applyI18n(s) {
 
 // ── Language ───────────────────────────────────────────────────────────────────
 
-/** Populates both language dropdowns with localized display names. */
-function populateLanguageSelects(nativeLangKey) {
+/** Populates both language dropdowns with localized display names, sorted. */
+function populateLanguageSelects(nativeCode) {
+  const sorted = [...LANGUAGES].sort((a, b) =>
+    localeName(a, nativeCode).localeCompare(localeName(b, nativeCode), nativeCode),
+  );
   [elSelTarget, elSelNative].forEach(sel => {
     const current = sel.value;
     sel.innerHTML = '';
-    for (const lang of LANGUAGES) {
-      sel.appendChild(new Option(localeName(lang, nativeLangKey), lang));
+    for (const code of sorted) {
+      sel.appendChild(new Option(localeName(code, nativeCode), code));
     }
     if (current) sel.value = current;
   });

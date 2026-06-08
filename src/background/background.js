@@ -59,7 +59,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
   const context = await extractContext(tab.id, word);
   const config  = await getConfig().catch(() => null);
-  const s       = t(config?.nativeLang ?? 'Deutsch');
+  const s       = t(config?.nativeLang ?? 'en');
 
   try {
     const raw  = await fetchCardData(word, context, config);
