@@ -520,14 +520,23 @@ function esc(str) {
 
 function dateSuffix() { return new Date().toISOString().slice(0, 10); }
 
+let toastTimer = 0;
+
 function showToast(msg, isError = false) {
-  elToast.textContent = msg;
+  const text = String(msg).replace(/<br\s*\/?>/gi, '\n');
+
+  elToast.textContent = text;
   elToast.className   = [
-    'fixed bottom-3 left-1/2 -translate-x-1/2 text-white text-xs px-4 py-2 rounded-full shadow-lg whitespace-nowrap z-50',
+    'fixed bottom-3 left-1/2 -translate-x-1/2 text-white text-xs px-4 py-2 rounded-lg shadow-lg z-50',
+    'max-w-[26rem] whitespace-pre-line break-words',
     isError ? 'bg-rose-600' : 'bg-slate-800',
   ].join(' ');
   elToast.hidden = false;
-  setTimeout(() => { elToast.hidden = true; }, 3000);
+
+  // Scale duration with message length: 3s base, +40ms per char, capped at 12s.
+  const duration = Math.min(3000 + text.length * 40, 12000);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { elToast.hidden = true; }, duration);
 }
 
 init();
