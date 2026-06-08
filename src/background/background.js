@@ -10,7 +10,7 @@
 
 import { fetchCardData }               from '../api/llmClient.js';
 import { fetchPronunciation }          from '../api/pronunciation.js';
-import { saveCard }                    from '../storage/cardStorage.js';
+import { saveCard, getAllCards }        from '../storage/cardStorage.js';
 import { createCard, validateLlmData } from '../shared/cardSchema.js';
 import { getConfig }                   from '../config/configStorage.js';
 import { t }                           from '../i18n/strings.js';
@@ -41,6 +41,7 @@ chrome.runtime.onStartup.addListener(registerContextMenu);
 // Re-register context menu when settings are saved
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'SETTINGS_CHANGED') registerContextMenu();
+  if (msg.type === 'REVALIDATE_CARD')  revalidateCard(msg.cardId, msg.word, msg.context);
 });
 
 // ── Context menu handler ───────────────────────────────────────────────────────
@@ -68,7 +69,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const wiktIpa = await fetchPronunciation(word, config.targetLang).catch(() => null);
     if (wiktIpa) data.pronunciation = wiktIpa;
 
-    const card = createCard(word, context, tab.url ?? '', data);
+    const card = createCard(word, context, tab.url ?? '', data, wiktIpa != null);
 
     await saveCard(card);
     await chrome.storage.session.remove('lastError');
@@ -122,4 +123,40 @@ function notify(title, message) {
     title,
     message,
   });
+}
+
+// ── Card revalidation ─────────────────────────────────────────────────────────
+
+async function revalidateCard(cardId, word, context) {
+  try {
+    const config   = await getConfig();
+    const cards    = await getAllCards();
+    const existing = cards.find(c => c.id === cardId);
+    if (!existing) throw new Error('Card not found.');
+
+    const raw  = await fetchCardData(word, context, config);
+    const data = validateLlmData(raw);
+
+    // Default to keeping the existing pronunciation: legacy cards (no
+    // pronunciationFromLookup field) likely have Wiktionary IPA from the
+    // original create path and shouldn't be overwritten by an LLM guess.
+    const keepPronunciation = existing.pronunciationFromLookup !== false;
+
+    const updated = {
+      ...existing,
+      translation:   data.translation,
+      pronunciation: keepPronunciation ? existing.pronunciation : data.pronunciation,
+      wordClass:     data.wordClass,
+      grammar:       data.grammar,
+      exampleDA:     data.exampleDA,
+      exampleDE:     data.exampleDE,
+      memoryTip:     data.memoryTip,
+    };
+
+    await saveCard(updated);
+    chrome.runtime.sendMessage({ type: 'CARD_REVALIDATED', card: updated }).catch(() => {});
+  } catch (err) {
+    const errorMsg = err.message ?? 'Unknown error.';
+    chrome.runtime.sendMessage({ type: 'CARD_REVALIDATE_ERROR', cardId, error: errorMsg }).catch(() => {});
+  }
 }
