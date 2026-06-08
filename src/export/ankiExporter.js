@@ -12,6 +12,8 @@
  *   https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
  */
 
+import { buildModelParts, cardToFieldValues } from './ankiModel.js';
+
 // ── IDs ───────────────────────────────────────────────────────────────────────
 
 /**
@@ -31,82 +33,43 @@ function langPairIds(targetLang, nativeLang) {
 
 // ── Anki model (card template) ────────────────────────────────────────────────
 
-/**
- * Returns the Anki model JSON (as a JS object, serialized later).
- * Fields:  0 Word | 1 Translation | 2 Pronunciation | 3 Word class
- *          4 Grammar | 5 Example (target) | 6 Example (native) | 7 Memory tip | 8 Context
- */
-function buildModel(nowSec, modelId, targetLang) {
-  const fields = [
-    'Wort', 'Übersetzung', 'Aussprache', 'Wortklasse',
-    'Grammatik', 'Beispiel DA', 'Beispiel DE', 'Merktipp', 'Kontext',
-  ].map((name, ord) => ({
+/** Returns the Anki model JSON (as a JS object, serialized later). */
+function buildModel(nowSec, modelId, parts) {
+  const flds = parts.fieldNames.map((name, ord) => ({
     name, ord, sticky: false, rtl: false, font: 'Arial', size: 20, media: [],
   }));
 
-  const qfmt = `\
-<div class="da-word">{{Wort}}</div>
-{{#Kontext}}<div class="context">„{{Kontext}}"</div>{{/Kontext}}`;
-
-  const afmt = `\
-{{FrontSide}}
-<hr id="answer">
-<div class="translation">{{Übersetzung}}</div>
-<div class="pronunciation">[{{Aussprache}}]</div>
-<div class="word-class">{{Wortklasse}}</div>
-{{#Grammatik}}<div class="grammar">📝 {{Grammatik}}</div>{{/Grammatik}}
-<div class="examples">
-  <div class="ex-da">🇩🇰 <em>{{Beispiel DA}}</em></div>
-  <div class="ex-de">🇩🇪 {{Beispiel DE}}</div>
-</div>
-{{#Merktipp}}<div class="tip">💡 {{Merktipp}}</div>{{/Merktipp}}`;
-
-  const css = `\
-.card { font-family: Arial, sans-serif; font-size: 16px; text-align: left; color: #1a1a2e; }
-.da-word { font-size: 2em; font-weight: bold; color: #c30000; margin-bottom: 6px; }
-.context { color: #666; font-style: italic; margin-bottom: 12px; font-size: 0.9em; }
-.translation { font-size: 1.4em; font-weight: bold; margin-bottom: 4px; }
-.pronunciation { color: #555; font-style: italic; margin-bottom: 8px; }
-.word-class { background: #f0f4f8; padding: 3px 8px; border-radius: 4px;
-              margin-bottom: 6px; font-size: 0.85em; display: inline-block; }
-.grammar { color: #444; margin-bottom: 10px; font-size: 0.9em; }
-.examples { border-left: 3px solid #c30000; padding-left: 12px; margin-bottom: 10px; }
-.ex-da { font-style: italic; margin-bottom: 3px; }
-.ex-de { color: #555; }
-.tip { background: #fffde7; border: 1px solid #f9a825; padding: 8px;
-       border-radius: 4px; font-size: 0.9em; }`;
-
   return {
     [modelId]: {
-      id:      modelId,
-      name:    `Ordforråd – ${targetLang}`,
-      type:    0,
-      mod:     nowSec,
-      usn:     -1,
-      sortf:   0,
-      did:     null,
-      flds:    fields,
+      id:    modelId,
+      name:  parts.model,
+      type:  0,
+      mod:   nowSec,
+      usn:   -1,
+      sortf: 0,
+      did:   null,
+      flds,
       tmpls: [{
-        name:  'Karte 1',
+        name:  parts.templateName,
         ord:   0,
-        qfmt,
-        afmt,
+        qfmt:  parts.qfmt,
+        afmt:  parts.afmt,
         bqfmt: '',
         bafmt: '',
         did:   null,
         bfont: '',
         bsize: 0,
       }],
-      css,
+      css:       parts.css,
       latexPre:  '\\documentclass[12pt]{article}\n\\pagestyle{empty}\n\\begin{document}\n',
       latexPost: '\\end{document}',
-      tags:  [],
-      vers:  [],
+      tags:      [],
+      vers:      [],
     },
   };
 }
 
-function buildDecks(nowSec, deckId, targetLang) {
+function buildDecks(nowSec, deckId, parts) {
   return {
     1: {
       id: 1, name: 'Default', conf: 1, desc: '', dyn: 0,
@@ -116,7 +79,7 @@ function buildDecks(nowSec, deckId, targetLang) {
       newToday: [0,0], revToday: [0,0], lrnToday: [0,0], timeToday: [0,0],
     },
     [deckId]: {
-      id: deckId, name: `Ordforråd::${targetLang}`, conf: 1, desc: '', dyn: 0,
+      id: deckId, name: parts.deck, conf: 1, desc: '', dyn: 0,
       collapsed: false, browserCollapsed: true,
       extendNew: 0, extendRev: 50,
       mod: nowSec, usn: -1,
@@ -246,6 +209,7 @@ export async function exportToApkg(cards, config) {
   if (cards.length === 0) throw new Error('No cards to export.');
 
   const { deckId, modelId } = langPairIds(config.targetLang, config.nativeLang);
+  const parts = buildModelParts(config.targetLang, config.nativeLang);
 
   // initialise sql.js (WASM stored locally in libs/)
   const SQL = await initSqlJs({
@@ -269,8 +233,8 @@ export async function exportToApkg(cards, config) {
                        addToCur: true, curDeck: deckId, newBury: true,
                        newSpread: 0, dueCounts: true,
                        curModel: String(modelId), collapseTime: 1200 }),
-      JSON.stringify(buildModel(nowSec, modelId, config.targetLang)),
-      JSON.stringify(buildDecks(nowSec, deckId, config.targetLang)),
+      JSON.stringify(buildModel(nowSec, modelId, parts)),
+      JSON.stringify(buildDecks(nowSec, deckId, parts)),
       JSON.stringify(DCONF),
       '{}',
     ],
@@ -283,10 +247,7 @@ export async function exportToApkg(cards, config) {
     const cardId = card.createdAt + i + 1;      // must differ from noteId
 
     // \x1f = ASCII Unit Separator, Anki's internal field delimiter
-    const flds = [
-      card.word, card.translation, card.pronunciation, card.wordClass,
-      card.grammar, card.exampleDA, card.exampleDE, card.memoryTip, card.context,
-    ].join('\x1f');
+    const flds = cardToFieldValues(card, parts.schema).join('\x1f');
 
     const csum = await fieldChecksum(card.word);
 

@@ -1,23 +1,17 @@
-/**
- * AnkiConnect client (https://foosoft.net/projects/anki-connect/)
- *
- * Requires the AnkiConnect add-on (code 2055492929) installed in Anki desktop.
- * Anki must be running for any of these calls to succeed.
- */
+/** AnkiConnect client. Requires the AnkiConnect add-on (2055492929) running in Anki desktop. */
 
-const URL     = 'http://127.0.0.1:8765';
-const VERSION = 6;
-const DECK    = 'Ordforråd';
-const MODEL   = 'Basic';
-const TAG     = 'ordforraad';
+import { TAG, buildModelParts, cardToFieldMap } from './ankiModel.js';
 
-// ── Core ──────────────────────────────────────────────────────────────────────
+const ENDPOINT             = 'http://127.0.0.1:8765';
+const VERSION              = 6;
+const AVAILABILITY_TIMEOUT = 1000;
 
-async function invoke(action, params = {}) {
-  const res = await fetch(URL, {
+async function invoke(action, params = {}, { signal } = {}) {
+  const res = await fetch(ENDPOINT, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ action, version: VERSION, params }),
+    signal,
   });
   if (!res.ok) throw new Error(`AnkiConnect HTTP ${res.status}`);
   const { result, error } = await res.json();
@@ -25,65 +19,69 @@ async function invoke(action, params = {}) {
   return result;
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
-
-/** Returns true if AnkiConnect is reachable. */
+/** Short timeout so the popup doesn't hang on a closed port. */
 export async function isAvailable() {
+  const signal = AbortSignal.timeout(AVAILABILITY_TIMEOUT);
   try {
-    await invoke('version');
+    await invoke('version', {}, { signal });
     return true;
-  } catch {
+  } catch (err) {
+    console.debug('[AnkiConnect] not available:', err.message);
     return false;
   }
 }
 
-/**
- * Adds an array of VocabCards to the Ordforråd deck.
- * Skips duplicates silently (duplicate = same Front field).
- * @param {import('../shared/cardSchema.js').VocabCard[]} cards
- * @returns {Promise<{ added: number, skipped: number }>}
- */
-export async function addCards(cards) {
-  await invoke('createDeck', { deck: DECK });
+export async function addCards(cards, targetLang, nativeLang) {
+  const parts = buildModelParts(targetLang, nativeLang);
+
+  await ensureModel(parts);
+  await invoke('createDeck', { deck: parts.deck });
 
   const notes = cards.map(card => ({
-    deckName:  DECK,
-    modelName: MODEL,
-    fields:    { Front: buildFront(card), Back: buildBack(card) },
+    deckName:  parts.deck,
+    modelName: parts.model,
+    fields:    cardToFieldMap(card, parts.schema),
     options:   { allowDuplicate: false, duplicateScope: 'deck' },
     tags:      [TAG],
   }));
 
   const results = await invoke('addNotes', { notes });
   if (!Array.isArray(results)) throw new Error('Unexpected response from AnkiConnect');
-  const added   = results.filter(id => id !== null).length;
-  return { added, skipped: results.length - added };
+
+  // Custom model + validated fields → null entries can only be duplicates.
+  const added      = results.filter(id => id !== null).length;
+  const duplicates = results.length - added;
+  return { added, duplicates };
 }
 
-// ── Card formatting ───────────────────────────────────────────────────────────
+// Existing-model template/CSS sync runs once per popup session.
+// Legacy migration (e.g. old 'Beispiel DA' field): rename manually in Anki or delete the model.
+const syncedThisSession = new Set();
 
-function buildFront(card) {
-  let html = `<b>${esc(card.word)}</b>`;
-  if (card.pronunciation) html += `<br><span style="color:#888">${esc(card.pronunciation)}</span>`;
-  return html;
-}
-
-function buildBack(card) {
-  let html = `<b>${esc(card.translation)}</b>`;
-  if (card.wordClass) html += ` <span style="color:#888">(${esc(card.wordClass)})</span>`;
-  if (card.grammar)   html += `<br><small style="color:#aaa">${esc(card.grammar)}</small>`;
-  if (card.exampleDA) {
-    html += `<hr style="margin:6px 0"><i>${esc(card.exampleDA)}</i>`;
-    if (card.exampleDE) html += `<br><span style="color:#888">${esc(card.exampleDE)}</span>`;
+async function ensureModel(parts) {
+  try {
+    await invoke('createModel', {
+      modelName:     parts.model,
+      inOrderFields: parts.fieldNames,
+      css:           parts.css,
+      isCloze:       false,
+      cardTemplates: [{ Name: parts.templateName, Front: parts.qfmt, Back: parts.afmt }],
+    });
+    syncedThisSession.add(parts.model);
+    return;
+  } catch (err) {
+    if (!/already exists/i.test(err.message)) throw err;
   }
-  if (card.memoryTip) html += `<hr style="margin:6px 0">💡 ${esc(card.memoryTip)}`;
-  return html;
-}
+  if (syncedThisSession.has(parts.model)) return;
 
-function esc(str) {
-  return String(str ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  await invoke('updateModelTemplates', {
+    model: {
+      name: parts.model,
+      templates: { [parts.templateName]: { Front: parts.qfmt, Back: parts.afmt } },
+    },
+  });
+  await invoke('updateModelStyling', {
+    model: { name: parts.model, css: parts.css },
+  });
+  syncedThisSession.add(parts.model);
 }
