@@ -4,6 +4,7 @@
 
 import { getAllCards, deleteCard }           from '../storage/cardStorage.js';
 import { exportToApkg }                     from '../export/ankiExporter.js';
+import { isAvailable, addCards }            from '../export/ankiConnect.js';
 import { getConfig, saveConfig, LANGUAGES } from '../config/configStorage.js';
 import { fetchModels }                      from '../api/llmClient.js';
 import { t, localeName, cardCount }         from '../i18n/strings.js';
@@ -15,6 +16,7 @@ const elEmpty         = document.getElementById('state-empty');
 const elList          = document.getElementById('card-list');
 const elCount         = document.getElementById('card-count');
 const elExport        = document.getElementById('btn-export');
+const elAnki          = document.getElementById('btn-anki');
 const elToast         = document.getElementById('toast');
 const elBtnSettings   = document.getElementById('btn-settings');
 const elSettings      = document.getElementById('settings-panel');
@@ -36,6 +38,8 @@ const elDismissError  = document.getElementById('btn-dismiss-error');
 
 // Currently loaded strings (set after config is loaded)
 let currentStrings = t('Deutsch');
+let ankiAvailable  = false;
+let lastCardCount  = 0;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -49,6 +53,7 @@ async function init() {
     const cards = await getAllCards();
     render(cards);
     updateSetupBanner(config, cards.length);
+    refreshAnkiAvailability();
   } catch (err) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
     updateSetupBanner(config, 0);
@@ -81,16 +86,23 @@ async function init() {
 
 // ── i18n ─────────────────────────────────────────────────────────────────────
 
-/** Populates all [data-i18n] and [data-i18n-title] elements. */
+function resolve(s, path) {
+  return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), s);
+}
+
 function applyI18n(s) {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
+  for (const el of document.querySelectorAll('[data-i18n]')) {
     const key = el.dataset.i18n;
-    if (s[key] != null) el.textContent = s[key];
-  });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const v   = resolve(s, key);
+    if (v == null) { console.warn(`[i18n] missing key "${key}"`); continue; }
+    el.textContent = v;
+  }
+  for (const el of document.querySelectorAll('[data-i18n-title]')) {
     const key = el.dataset.i18nTitle;
-    if (s[key] != null) el.title = s[key];
-  });
+    const v   = resolve(s, key);
+    if (v == null) { console.warn(`[i18n] missing title key "${key}"`); continue; }
+    el.title = v;
+  }
 }
 
 // ── Language ───────────────────────────────────────────────────────────────────
@@ -275,8 +287,10 @@ elBtnSave.addEventListener('click', async () => {
 
 function render(cards) {
   elLoading.hidden = true;
-  elCount.textContent = cardCount(cards.length, currentStrings);
-  elExport.disabled   = cards.length === 0;
+  lastCardCount        = cards.length;
+  elCount.textContent  = cardCount(cards.length, currentStrings);
+  elExport.disabled    = cards.length === 0;
+  updateAnkiButton();
 
   // Preserve skeletons across re-renders
   const skeletons = [...elList.querySelectorAll('[data-skeleton]')];
@@ -375,6 +389,7 @@ function removeSkeleton(word) {
 // ── Card events ───────────────────────────────────────────────────────────────
 
 elExport.addEventListener('click', handleExport);
+elAnki.addEventListener('click', handleAnkiSend);
 
 async function handleDelete(id) {
   await deleteCard(id);
@@ -384,6 +399,39 @@ async function handleDelete(id) {
     showToast(`${currentStrings.storageErr}: ${err.message}`, true);
   }
 }
+
+async function handleAnkiSend() {
+  const a = currentStrings.anki;
+  elAnki.disabled    = true;
+  elAnki.textContent = a.sending;
+  try {
+    const [cards, config] = await Promise.all([getAllCards(), getConfig()]);
+    const { added, duplicates } = await addCards(cards, config.targetLang, config.nativeLang);
+    const msg = duplicates > 0
+      ? `${added} ${a.added}, ${duplicates} ${a.duplicates}`
+      : `${added} ${a.added}`;
+    showToast(msg);
+  } catch (err) {
+    showToast(`${a.error}: ${err.message}`, true);
+  } finally {
+    elAnki.textContent = a.send;
+    elAnki.disabled    = false;
+  }
+}
+
+function updateAnkiButton() {
+  elAnki.hidden   = !ankiAvailable;
+  elAnki.disabled = lastCardCount === 0;
+}
+
+function refreshAnkiAvailability() {
+  isAvailable().then(up => { ankiAvailable = up; updateAnkiButton(); });
+}
+
+// Detached/pinned popup may stay alive across focus changes — re-check on return.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') refreshAnkiAvailability();
+});
 
 async function handleExport() {
   elExport.disabled    = true;
