@@ -39,6 +39,7 @@ const elDismissError  = document.getElementById('btn-dismiss-error');
 // Currently loaded strings (set after config is loaded)
 let currentStrings = t('Deutsch');
 let ankiAvailable  = false;
+let lastCards      = [];
 let lastCardCount  = 0;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -80,6 +81,16 @@ async function init() {
     }
     if (msg.type === 'CARD_ERROR') {
       showErrorBanner(`${currentStrings.error}: ${msg.error}`);
+    }
+    if (msg.type === 'CARD_REVALIDATED') {
+      revalidatingIds.delete(msg.card.id);
+      lastCards = lastCards.map(c => c.id === msg.card.id ? msg.card : c);
+      render(lastCards);
+    }
+    if (msg.type === 'CARD_REVALIDATE_ERROR') {
+      revalidatingIds.delete(msg.cardId);
+      showToast(`${currentStrings.error}: ${msg.error}`, true);
+      render(lastCards);
     }
   });
 }
@@ -283,10 +294,16 @@ elBtnSave.addEventListener('click', async () => {
   showToast(currentStrings.saved);
 });
 
+// ── Revalidation state ────────────────────────────────────────────────────────
+
+/** IDs of cards currently being revalidated by the AI */
+const revalidatingIds = new Set();
+
 // ── Render ────────────────────────────────────────────────────────────────────
 
 function render(cards) {
   elLoading.hidden = true;
+  lastCards            = cards;
   lastCardCount        = cards.length;
   elCount.textContent  = cardCount(cards.length, currentStrings);
   elExport.disabled    = cards.length === 0;
@@ -308,8 +325,16 @@ function render(cards) {
   [...cards].sort((a, b) => b.createdAt - a.createdAt).forEach(c => elList.appendChild(buildCard(c)));
 }
 
+function revalidateButton(card, isRevalidating, s) {
+  const icon     = isRevalidating ? '<span class="inline-block animate-spin">↻</span>' : '↻';
+  const disabled = isRevalidating ? ' disabled' : '';
+  return `<button class="btn-revalidate text-slate-300 dark:text-[#5f6368] hover:text-blue-400 transition-colors text-sm leading-none shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-default"
+    data-id="${esc(card.id)}" title="${esc(s.revalidate)}"${disabled}>${icon}</button>`;
+}
+
 function buildCard(card) {
-  const s  = currentStrings;
+  const s              = currentStrings;
+  const isRevalidating = revalidatingIds.has(card.id);
   const li = document.createElement('li');
   li.className  = 'bg-white dark:bg-[#292a2d] rounded-xl border border-slate-200 dark:border-[#3c4043] shadow-sm overflow-hidden';
   li.dataset.id = card.id;
@@ -320,6 +345,7 @@ function buildCard(card) {
       <div class="flex items-baseline gap-2">
         <span class="text-slate-900 dark:text-[#e8eaed] font-bold text-[15px] leading-snug grow">${esc(card.word)}</span>
         <span class="text-[10px] text-slate-400 dark:text-[#9aa0a6] truncate max-w-[140px] text-right" title="${esc(card.wordClass)}">${esc(card.wordClass)}</span>
+        ${revalidateButton(card, isRevalidating, s)}
         <button class="btn-delete text-slate-300 dark:text-[#5f6368] hover:text-rose-400 transition-colors text-sm leading-none shrink-0 cursor-pointer"
           data-id="${esc(card.id)}" title="${esc(s.delete)}">✕</button>
       </div>
@@ -343,6 +369,9 @@ function buildCard(card) {
     </div>
   `;
 
+  if (!isRevalidating) {
+    li.querySelector('.btn-revalidate').addEventListener('click', () => handleRevalidate(card));
+  }
   li.querySelector('.btn-delete').addEventListener('click', () => handleDelete(card.id));
   return li;
 }
@@ -390,6 +419,18 @@ function removeSkeleton(word) {
 
 elExport.addEventListener('click', handleExport);
 elAnki.addEventListener('click', handleAnkiSend);
+
+async function handleRevalidate(card) {
+  if (revalidatingIds.has(card.id)) return;
+  revalidatingIds.add(card.id);
+  render(lastCards);
+  chrome.runtime.sendMessage({
+    type:    'REVALIDATE_CARD',
+    cardId:  card.id,
+    word:    card.word,
+    context: card.context,
+  }).catch(() => {});
+}
 
 async function handleDelete(id) {
   await deleteCard(id);

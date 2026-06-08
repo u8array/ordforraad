@@ -5,7 +5,8 @@
  * @property {string}  context     Sentence/context from the source page
  * @property {string}  sourceUrl   URL of the source page
  * @property {string}  translation Native-language translation
- * @property {string}  pronunciationPhonetic transcription (IPA / simplified)
+ * @property {string}  pronunciation           Phonetic transcription (IPA / simplified)
+ * @property {boolean} pronunciationFromLookup True if pronunciation was set via Wiktionary lookup
  * @property {string}  wordClass   Word class + inflection info in the target language
  * @property {string}  grammar     Grammar note in native language
  * @property {string}  exampleDA   Example sentence in target language
@@ -17,26 +18,28 @@
 /**
  * Creates a new VocabCard from the LLM response object.
  *
- * @param {string} word
- * @param {string} context
- * @param {string} sourceUrl
- * @param {object} llmData Validated JSON from the LLM
+ * @param {string}  word
+ * @param {string}  context
+ * @param {string}  sourceUrl
+ * @param {object}  llmData             Validated JSON from the LLM
+ * @param {boolean} [pronunciationFromLookup=false]
  * @returns {VocabCard}
  */
-export function createCard(word, context, sourceUrl, llmData) {
+export function createCard(word, context, sourceUrl, llmData, pronunciationFromLookup = false) {
   return {
-    id:           crypto.randomUUID(),
-    word:         word.trim(),
-    context:      context.trim(),
+    id:                     crypto.randomUUID(),
+    word:                   word.trim(),
+    context:                context.trim(),
     sourceUrl,
-    translation:  llmData.translation  ?? '',
-    pronunciation: llmData.pronunciation ?? '',
-    wordClass:    llmData.wordClass    ?? '',
-    grammar:      llmData.grammar      ?? '',
-    exampleDA:    llmData.exampleDA    ?? '',
-    exampleDE:    llmData.exampleDE    ?? '',
-    memoryTip:    llmData.memoryTip    ?? '',
-    createdAt:    Date.now(),
+    translation:            llmData.translation  ?? '',
+    pronunciation:          llmData.pronunciation ?? '',
+    pronunciationFromLookup,
+    wordClass:              llmData.wordClass    ?? '',
+    grammar:                llmData.grammar      ?? '',
+    exampleDA:              llmData.exampleDA    ?? '',
+    exampleDE:              llmData.exampleDE    ?? '',
+    memoryTip:              llmData.memoryTip    ?? '',
+    createdAt:              Date.now(),
   };
 }
 
