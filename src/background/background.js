@@ -148,8 +148,8 @@ async function revalidateCard(cardId, word, context) {
       pronunciation: keepPronunciation ? existing.pronunciation : data.pronunciation,
       wordClass:     data.wordClass,
       grammar:       data.grammar,
-      exampleDA:     data.exampleDA,
-      exampleDE:     data.exampleDE,
+      exampleTarget: data.exampleTarget,
+      exampleNative: data.exampleNative,
       memoryTip:     data.memoryTip,
     };
 

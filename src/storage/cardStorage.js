@@ -1,16 +1,28 @@
-/**
- * Card CRUD via chrome.storage.local.
- *
- * All functions are async and return Promises.
- * Cards are stored as an array under a single key.
- */
+/** Card CRUD via chrome.storage.local. Cards are stored as one array under STORAGE_KEY. */
 
 const STORAGE_KEY = 'vocab_cards';
 
 /** @returns {Promise<import('../shared/cardSchema.js').VocabCard[]>} */
 export async function getAllCards() {
   const result = await chrome.storage.local.get(STORAGE_KEY);
-  return result[STORAGE_KEY] ?? [];
+  const cards  = result[STORAGE_KEY] ?? [];
+  if (!cards.some(needsLegacyRename)) return cards;
+  const migrated = cards.map(renameLegacyExampleFields);
+  await chrome.storage.local.set({ [STORAGE_KEY]: migrated });
+  return migrated;
+}
+
+function needsLegacyRename(card) {
+  return 'exampleDA' in card || 'exampleDE' in card;
+}
+
+function renameLegacyExampleFields(card) {
+  const { exampleDA, exampleDE, ...rest } = card;
+  return {
+    ...rest,
+    exampleTarget: card.exampleTarget ?? exampleDA ?? '',
+    exampleNative: card.exampleNative ?? exampleDE ?? '',
+  };
 }
 
 /**

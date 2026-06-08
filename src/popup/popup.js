@@ -358,10 +358,10 @@ function buildCard(card) {
         <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6] italic">${esc(card.pronunciation)}</div>
       </div>
 
-      ${card.exampleDA ? `
+      ${card.exampleTarget ? `
       <div class="pl-2.5 border-l-2 border-slate-100 dark:border-[#3c4043] space-y-0.5">
-        <div class="text-[11px] text-slate-600 dark:text-[#bdc1c6] italic">${esc(card.exampleDA)}</div>
-        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6]">${esc(card.exampleDE)}</div>
+        <div class="text-[11px] text-slate-600 dark:text-[#bdc1c6] italic">${esc(card.exampleTarget)}</div>
+        <div class="text-[11px] text-slate-400 dark:text-[#9aa0a6]">${esc(card.exampleNative)}</div>
       </div>` : ''}
 
       ${card.memoryTip ? `

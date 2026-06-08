@@ -55,10 +55,14 @@ const LEGACY_LANG_KEYS = {
   'Ungarisch':             'hu',
 };
 
+// Browser locales not directly present in LANGUAGES map to a close variant.
+const LOCALE_ALIASES = { no: 'nb', nn: 'nb' };
+
 /** Detects the native language from the browser locale; falls back to English. */
 function detectNativeLang() {
   const locale = chrome.i18n.getUILanguage?.() ?? navigator.language ?? 'en';
-  const code   = locale.split('-')[0].toLowerCase();
+  const raw    = locale.split('-')[0].toLowerCase();
+  const code   = LOCALE_ALIASES[raw] ?? raw;
   return LANGUAGES.includes(code) ? code : 'en';
 }
 
@@ -67,10 +71,8 @@ async function getRawConfig() {
   const result = await chrome.storage.local.get(CONFIG_KEY);
   const saved  = result[CONFIG_KEY];
 
-  const defaults = saved
-    ? DEFAULT_CONFIG
-    : { ...DEFAULT_CONFIG, nativeLang: detectNativeLang() };
-  const raw = { ...defaults, ...(saved ?? {}) };
+  const defaults = { ...DEFAULT_CONFIG, nativeLang: detectNativeLang() };
+  const raw      = { ...defaults, ...(saved ?? {}) };
 
   let dirty = false;
 

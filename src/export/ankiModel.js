@@ -2,17 +2,11 @@
 
 import { t, localeName } from '../i18n/strings.js';
 
-// Order is the schema — defines field order in Anki and index in the .apkg flds string.
+// Field order in Anki and index in the .apkg flds string. Each entry is both
+// the VocabCard property name and the i18n key under `anki.fields`.
 const SCHEMA_PROPS = [
-  { prop: 'word',          i18nKey: 'word' },
-  { prop: 'translation',   i18nKey: 'translation' },
-  { prop: 'pronunciation', i18nKey: 'pronunciation' },
-  { prop: 'wordClass',     i18nKey: 'wordClass' },
-  { prop: 'grammar',       i18nKey: 'grammar' },
-  { prop: 'exampleDA',     i18nKey: 'exampleTarget' },
-  { prop: 'exampleDE',     i18nKey: 'exampleNative' },
-  { prop: 'memoryTip',     i18nKey: 'memoryTip' },
-  { prop: 'context',       i18nKey: 'context' },
+  'word', 'translation', 'pronunciation', 'wordClass', 'grammar',
+  'exampleTarget', 'exampleNative', 'memoryTip', 'context',
 ];
 
 // Anki's template parser breaks on these chars in field names.
@@ -85,9 +79,9 @@ export function buildModelParts(targetLang, nativeLang) {
   const f       = strings.anki?.fields;
   if (!f) throw new Error(`Missing 'anki.fields' i18n block for ${nativeLang}`);
 
-  const schema = SCHEMA_PROPS.map(({ prop, i18nKey }) => {
-    const name = f[i18nKey];
-    if (name == null) throw new Error(`Missing 'anki.fields.${i18nKey}' i18n value for ${nativeLang}`);
+  const schema = SCHEMA_PROPS.map(prop => {
+    const name = f[prop];
+    if (name == null) throw new Error(`Missing 'anki.fields.${prop}' i18n value for ${nativeLang}`);
     return { name, prop };
   });
   const fieldNames = schema.map(s => s.name);
