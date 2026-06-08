@@ -16,7 +16,9 @@ const SCHEMA_PROPS = [
 ];
 
 // Anki's template parser breaks on these chars in field names.
-const FORBIDDEN_FIELD_CHARS = /[{}":]/;
+const FORBIDDEN_FIELD_CHARS  = /[{}":]/;
+// Mustache sigils as a leading char turn the reference into a section tag.
+const FORBIDDEN_FIELD_PREFIX = /^[#^/]/;
 
 function validateFieldNames(names) {
   const seen = new Set();
@@ -24,6 +26,9 @@ function validateFieldNames(names) {
     if (!name) throw new Error('Anki field name is empty');
     if (FORBIDDEN_FIELD_CHARS.test(name)) {
       throw new Error(`Anki field name "${name}" contains a forbidden character ({, }, ", :)`);
+    }
+    if (FORBIDDEN_FIELD_PREFIX.test(name)) {
+      throw new Error(`Anki field name "${name}" cannot start with #, ^, or /`);
     }
     if (seen.has(name)) throw new Error(`Duplicate Anki field name: "${name}"`);
     seen.add(name);
